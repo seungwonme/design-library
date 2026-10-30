@@ -1,0 +1,19 @@
+{
+  "checked_at": "2026-10-30",
+  "renderer": "Chromium headless through browser tool",
+  "viewport": { "width": 1440, "height": 1000, "deviceScaleFactor": 1.25 },
+  "url": "https://seungwonme.github.io/camera-gallery/",
+  "checks": [
+    { "name": "initial catalog", "status": "pass", "finding": "33 cards rendered; filter counts are 24 framing and 9 optics/environment; no visible canvas API error." },
+    { "name": "accessibility tree", "status": "pass", "finding": "Header, searchbox, named filter buttons, theme button, Canvas labels, source links and redraw buttons are exposed." },
+    { "name": "optics filter", "status": "pass", "finding": "Selecting 광학/환경 exposes 9 results and aria-pressed=true." },
+    { "name": "dark theme", "status": "pass", "finding": "Theme button changes to 밝은 화면 and aria-pressed=true; cards are re-rendered with the dark palette." },
+    { "name": "search", "status": "pass", "finding": "Entering 망원 narrows the visible catalog to the matching telephoto entry while preserving the selected filter." },
+    { "name": "public assets", "status": "pass", "finding": "Pages HTML, JSON mapping, CSS and renderer load from relative paths; public site returned HTTP 200." }
+  ],
+  "limitations": [
+    "Mobile physical device and Safari were not tested.",
+    "The browser tool did not provide a pixel-diff screenshot comparison.",
+    "The mapping JSON is authored evidence, not an extracted third-party design token source."
+  ]
+}

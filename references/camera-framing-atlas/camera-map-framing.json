@@ -1,0 +1,299 @@
+[
+  {
+    "itemId": "eyecandy:central-framing",
+    "previewId": "framing:central-framing",
+    "motion": false,
+    "explanation": "주요 인물을 화면 중심과 중심선에 고정해 좌우 여백과 시선의 균형을 보여 주는 정적 구도입니다.",
+    "limitation": "실제 영화 장면의 미장센이나 렌즈 선택을 재현하지 않은 개념 도식입니다.",
+    "kind": "framing",
+    "qa": { "observable": "인물의 중심축과 화면 중심선이 겹침", "start": "인물이 중앙에 있고 양쪽 배경 여백이 비슷함", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "eyecandy:fisheye",
+    "previewId": "framing:fisheye",
+    "motion": false,
+    "explanation": "직선 격자와 원형 테두리를 실제로 휘게 그려 넓은 시야와 배럴 왜곡을 함께 설명합니다.",
+    "limitation": "정확한 등거리/등각 어안 투영이 아닌 시각적 근사이며 렌즈 모델이나 센서 수치를 나타내지 않습니다.",
+    "kind": "optics",
+    "qa": { "observable": "직선 격자가 가장자리에서 곡선으로 휘고 중앙 인물은 크게 보임", "start": "중앙과 가장자리의 곡률 차이가 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "eyecandy:ground-shot",
+    "previewId": "framing:ground-shot",
+    "motion": false,
+    "explanation": "카메라를 지면에서 0.12단위 높이에 두고 발, 바닥선, 낮은 전경을 올려다보는 관계로 표시합니다.",
+    "limitation": "바닥 반사와 실제 광각 원근은 단순화했으며 실제 촬영 높이의 표준값을 주장하지 않습니다.",
+    "kind": "framing",
+    "qa": { "observable": "카메라 아이콘이 바닥선 바로 위에 있고 발이 프레임 하단에 가까움", "start": "지면 높이 카메라와 낮은 시선이 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "eyecandy:omnidirectional",
+    "previewId": "framing:omnidirectional",
+    "motion": false,
+    "explanation": "카메라 주변을 둘러싼 360도 범위 링과 네 방향 피사체를 따로 표시해 전방위 커버리지를 설명합니다.",
+    "limitation": "정확한 equirectangular 재투영이나 실제 카메라 오비트가 아니며, 360도 범위를 평면 도식으로 근사합니다.",
+    "kind": "optics",
+    "qa": { "observable": "카메라 중심의 원형 360도 링과 앞/뒤/좌/우 피사체가 보임", "start": "시야 범위 링이 카메라를 중심으로 닫힘", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "eyecandy:over-the-shoulder",
+    "previewId": "framing:over-the-shoulder",
+    "motion": false,
+    "explanation": "카메라 가까이에 있는 앞 인물의 어깨와 머리를 크게 겹쳐 놓고 그 너머의 주 피사체를 보여 줍니다.",
+    "limitation": "어깨 너비와 심도 흐림은 교육용 근사이며 실제 OTS 렌즈·초점·배우 동선을 의미하지 않습니다.",
+    "kind": "framing",
+    "qa": { "observable": "전경 어깨가 프레임 한쪽을 가리고 뒤 인물이 명확히 남음", "start": "전경 어깨와 후경 인물의 깊이 순서가 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "eyecandy:probe-lens",
+    "previewId": "framing:probe-lens",
+    "motion": false,
+    "explanation": "길쭉한 프로브 렌즈 몸체가 좁은 틈을 통과해 가까운 작은 구슬을 바라보는 관계를 일반 매크로와 분리해 그립니다.",
+    "limitation": "실제 내시경 광학계, 최소 초점거리, 왜곡과 조명은 구현하지 않은 개념도입니다.",
+    "kind": "optics",
+    "qa": { "observable": "카메라와 피사체 사이에 긴 튜브가 있고 좁은 프레임 안 작은 대상이 큼", "start": "긴 렌즈와 좁은 통로가 먼저 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "eyecandy:profile-shot",
+    "previewId": "framing:profile-shot",
+    "motion": false,
+    "explanation": "인물의 코와 어깨 방향이 한쪽을 향한 옆모습으로 보이도록 카메라를 측면에 배치합니다.",
+    "limitation": "실제 얼굴 윤곽이나 배우의 시선 연기는 단순한 기하학적 프로필로 표현했습니다.",
+    "kind": "framing",
+    "qa": { "observable": "코, 가슴, 어깨가 한 방향으로 정렬된 측면 인물", "start": "정면이 아닌 측면 실루엣이 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "eyecandy:shadow-box",
+    "previewId": "framing:shadow-box",
+    "motion": false,
+    "explanation": "두꺼운 전경 프레임 안쪽에 작은 인물과 빛의 사각형을 배치해 주변 공간이 남는 박스 구도를 설명합니다.",
+    "limitation": "실제 그림자 농도와 렌즈 비네팅이 아닌 화면 안의 프레임과 여백을 시각화한 것입니다.",
+    "kind": "framing",
+    "qa": { "observable": "안쪽 박스와 넓은 여백이 주 피사체를 둘러쌈", "start": "외부 프레임과 내부 인물이 분리됨", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "eyecandy:tableau-shots",
+    "previewId": "framing:tableau-shots",
+    "motion": false,
+    "explanation": "세 인물과 두 사물을 한 평면 구성처럼 배열하고 카메라를 정면 중앙에 두어 전체 그림을 읽게 합니다.",
+    "limitation": "실제 무대 미술, 깊이감, 조명 설계는 포함하지 않은 평면적 타블로 근사입니다.",
+    "kind": "framing",
+    "qa": { "observable": "인물과 사물이 한 화면 안의 행과 열로 정리됨", "start": "전체 배치와 카메라의 정면 관계가 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "eyecandy:tilt-shift",
+    "previewId": "framing:tilt-shift",
+    "motion": false,
+    "explanation": "화면을 가로지르는 좁은 선명 영역만 또렷하게 두고 앞뒤 영역을 흐리게 해 선택적 초점면을 설명합니다.",
+    "limitation": "실제 렌즈 틸트의 Scheimpflug 기하나 후반 합성 블러를 정확히 시뮬레이션하지 않습니다.",
+    "kind": "optics",
+    "qa": { "observable": "중앙의 기울어진 띠만 선명하고 앞뒤 격자와 인물이 흐림", "start": "선명 띠와 흐린 영역의 경계가 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "eyecandy:two-shot",
+    "previewId": "framing:two-shot",
+    "motion": false,
+    "explanation": "서로 다른 위치의 두 사람을 같은 프레임에 전신으로 넣어 관계와 반응을 함께 읽게 합니다.",
+    "limitation": "실제 배우 간 시선선, 대화 방향, 렌즈 선택은 단순화했습니다.",
+    "kind": "framing",
+    "qa": { "observable": "프레임 안에 정확히 두 명의 전신 인물이 보임", "start": "두 인물과 서로를 잇는 관계선이 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "eyecandy:ultra-wide-zero-d",
+    "previewId": "framing:ultra-wide-zero-d",
+    "motion": false,
+    "explanation": "카메라 가까이의 큰 블록과 멀리의 작은 인물을 한 화면에 넣어 초광각의 거리·크기 과장을 보여 줍니다.",
+    "limitation": "rectilinear 초광각의 실제 화각과 왜곡 수치를 재현하지 않고 상대 크기 관계만 강조합니다.",
+    "kind": "optics",
+    "qa": { "observable": "가까운 전경 기하가 매우 크고 멀리 있는 인물은 작지만 전신이 남음", "start": "전경과 후경의 크기 차이가 분명함", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "eyecandy:underwater",
+    "previewId": "framing:underwater",
+    "motion": false,
+    "explanation": "수면선 아래의 청록색 색감, 부유 입자, 위로 향하는 빛줄기와 떠 있는 인물로 수중 시점을 개념화합니다.",
+    "limitation": "굴절, 부력, 흡수 스펙트럼, 실제 방수 하우징은 표현하지 않은 개념적 색·입자 도식입니다.",
+    "kind": "optics",
+    "qa": { "observable": "수면선, 청록색 틴트, 입자, 위쪽 광선이 동시에 보임", "start": "물속 카메라와 인물의 수직 관계가 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "eyecandy:voyeur",
+    "previewId": "framing:voyeur",
+    "motion": false,
+    "explanation": "문틈처럼 좁은 전경 슬릿과 가림막을 사이에 두고 먼 인물을 관찰하는 듯한 시선을 구성합니다.",
+    "limitation": "사생활 침해 상황이나 실제 감시 장비를 재현하지 않고, 가림과 거리의 영화적 장치만 도식화합니다.",
+    "kind": "framing",
+    "qa": { "observable": "화면 양쪽 가림막 사이 좁은 틈으로 후경 인물이 보임", "start": "전경 가림과 후경 대상의 분리가 분명함", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "eyecandy:worms-eye",
+    "previewId": "framing:worms-eye",
+    "motion": false,
+    "explanation": "카메라를 지면 바로 위에 두고 인물의 발에서 머리까지 급격히 올려다보는 시선축을 표시합니다.",
+    "limitation": "실제 광각 왜곡이나 건물 높이의 인상은 단순한 저점 카메라 도식으로 근사했습니다.",
+    "kind": "framing",
+    "qa": { "observable": "카메라 높이가 가장 낮고 시선선이 머리 쪽으로 가파르게 상승함", "start": "지면 카메라와 위쪽 타깃의 각도가 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:medium-close-up",
+    "previewId": "framing:medium-close-up",
+    "motion": false,
+    "explanation": "인물의 가슴 위와 머리를 담아 표정과 어깨를 함께 읽는 중간 클로즈업으로 선택했습니다.",
+    "limitation": "워크시트의 명칭을 위한 선택 해석이며, 기관별 경계와 Close Shot의 차이를 확정하지 않습니다.",
+    "kind": "framing",
+    "qa": { "observable": "머리와 어깨, 가슴 일부가 보이고 팔꿈치 아래는 잘림", "start": "어깨선 위주로 인물이 크게 담김", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:wide-close-up",
+    "previewId": "framing:wide-close-up",
+    "motion": false,
+    "explanation": "와이드 클로즈업을 미디엄 클로즈업보다 넓은 머리·가슴 구도로 선택해 주변 배경을 조금 더 남깁니다.",
+    "limitation": "원자료가 구체 경계를 정의하지 않아 이 갤러리의 선택 해석이며 권위 있는 표준 정의가 아닙니다.",
+    "kind": "framing",
+    "qa": { "observable": "머리부터 가슴 아래까지 보이고 주변 배경 여백이 중간 클로즈업보다 넓음", "start": "인물의 상반신과 주변 공간이 함께 남음", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:full-shot",
+    "previewId": "framing:full-shot",
+    "motion": false,
+    "explanation": "머리부터 발끝까지 한 사람의 전신과 발 아래 바닥 여백을 함께 담는 풀 숏입니다.",
+    "limitation": "인물 비율은 이해를 위한 3.2단위 휴머노이드이며 실제 배우의 화면 비율이나 헤드룸 규칙이 아닙니다.",
+    "kind": "framing",
+    "qa": { "observable": "머리, 몸통, 양팔, 양다리, 발이 모두 프레임 안에 있음", "start": "전신과 최소한의 바닥 여백이 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:medium-full-shot",
+    "previewId": "framing:medium-full-shot",
+    "motion": false,
+    "explanation": "머리부터 무릎 아래까지 담아 전신보다 좁지만 서 있는 자세와 하체 관계가 남는 구도로 선택했습니다.",
+    "limitation": "Medium Full Shot의 관습적 경계가 자료마다 달라 선택한 크기 해석임을 밝힙니다.",
+    "kind": "framing",
+    "qa": { "observable": "머리부터 무릎 부근까지 보이고 종아리와 발은 잘림", "start": "허벅지·무릎과 상반신의 균형이 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:long-shot",
+    "previewId": "framing:long-shot",
+    "motion": false,
+    "explanation": "작은 전신 인물과 넓은 바닥·벽·먼 기둥을 함께 담아 인물과 환경의 관계가 우선되는 롱 숏입니다.",
+    "limitation": "롱 숏과 익스트림 롱 숏의 경계는 정하지 않고, 배경을 충분히 남기는 시각적 예시로만 사용합니다.",
+    "kind": "framing",
+    "qa": { "observable": "전신 인물이 작고 양옆·위아래 환경이 넓게 남음", "start": "인물보다 환경의 면적이 큼", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:close-shot",
+    "previewId": "framing:close-shot",
+    "motion": false,
+    "explanation": "클로스 숏을 머리와 어깨 중심으로 선택해 표정과 상체 관계를 크게 보여 줍니다.",
+    "limitation": "워크시트의 중간 크기 분류를 바탕으로 한 선택 해석이며 Close-up과의 경계를 단정하지 않습니다.",
+    "kind": "framing",
+    "qa": { "observable": "머리와 양어깨가 프레임을 채우고 가슴 아래는 잘림", "start": "얼굴과 어깨가 화면 대부분을 차지함", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:medium-close-shot",
+    "previewId": "framing:medium-close-shot",
+    "motion": false,
+    "explanation": "미디엄 클로스 숏을 허리 위 상반신으로 선택해 팔과 몸통 제스처가 읽히게 합니다.",
+    "limitation": "Medium Close-up과의 차이는 원자료가 정의하지 않으므로 이 갤러리의 명시적 선택 해석입니다.",
+    "kind": "framing",
+    "qa": { "observable": "머리부터 허리까지 보이고 양팔 전체가 일부 남음", "start": "표정과 손짓을 함께 읽을 수 있는 상반신", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:shoulder-level",
+    "previewId": "framing:shoulder-level",
+    "motion": false,
+    "explanation": "카메라 높이를 인물 어깨선 1.85단위에 맞추고 수평에 가까운 시선축을 보여 줍니다.",
+    "limitation": "어깨 위치는 도식 휴머노이드의 관절 기준이며 사람마다 다른 실제 카메라 설치 높이를 표준화하지 않습니다.",
+    "kind": "framing",
+    "qa": { "observable": "카메라 높이선이 인물 어깨와 교차함", "start": "어깨 높이와 카메라 높이가 같은 수평선에 있음", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:hip-level",
+    "previewId": "framing:hip-level",
+    "motion": false,
+    "explanation": "카메라를 골반 중심 1.30단위 높이에 두고 몸통 중간을 수평으로 바라보는 관계를 표시합니다.",
+    "limitation": "허리·골반의 실제 기준점은 사람과 장비에 따라 달라지며 수치는 이 도식 좌표에만 유효합니다.",
+    "kind": "framing",
+    "qa": { "observable": "카메라 높이선이 인물 골반과 교차함", "start": "카메라와 골반의 실제 높이 관계가 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:knee-level",
+    "previewId": "framing:knee-level",
+    "motion": false,
+    "explanation": "카메라를 무릎 중심 0.65단위 높이에 두어 하체와 지면 관계가 강조되는 시점을 표시합니다.",
+    "limitation": "무릎 위치는 단순 휴머노이드의 다리 중심이며 실제 인체 측정이나 장비 높이 인증값이 아닙니다.",
+    "kind": "framing",
+    "qa": { "observable": "카메라 높이선이 무릎 부근을 지나고 발과 바닥이 크게 남음", "start": "무릎과 지면의 관계가 수평선으로 드러남", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:single",
+    "previewId": "framing:single",
+    "motion": false,
+    "explanation": "한 명의 휴머노이드만 중심 피사체로 두고 빈 공간과 시선 방향을 읽는 싱글 구도를 구성합니다.",
+    "limitation": "싱글은 인원 수 중심의 분류로, 숏 크기와 카메라 높이를 별도로 규정하지 않습니다.",
+    "kind": "framing",
+    "qa": { "observable": "프레임 안에 주 인물 한 명만 있고 보조 인물이 없음", "start": "한 인물과 시선 방향을 연결하는 선이 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:three-shot",
+    "previewId": "framing:three-shot",
+    "motion": false,
+    "explanation": "세 명의 휴머노이드를 서로 다른 깊이와 높이로 배치해 같은 화면에서 세 사람의 관계를 읽게 합니다.",
+    "limitation": "세 사람의 실제 blocking, 렌즈 압축, 대화 방향은 표현하지 않은 인원수 중심 도식입니다.",
+    "kind": "framing",
+    "qa": { "observable": "프레임 안에 정확히 세 명의 휴머노이드가 보임", "start": "세 인물의 수와 깊이 순서가 구분됨", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:over-the-hip",
+    "previewId": "framing:over-the-hip",
+    "motion": false,
+    "explanation": "카메라 가까이 전경 인물의 허리와 골반을 크게 잘라 넣고 그 너머 후경 인물을 보여 줍니다.",
+    "limitation": "허리너머 숏의 명칭을 설명하는 근사이며 실제 초점, 배우 동선, 신체 가림 비율은 표준화하지 않습니다.",
+    "kind": "framing",
+    "qa": { "observable": "전경의 골반·허리가 하단을 가리고 후경 인물의 상반신이 남음", "start": "전경 허리와 후경 대상의 겹침이 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:dutch-left",
+    "previewId": "framing:dutch-left",
+    "motion": false,
+    "explanation": "카메라 롤을 왼쪽으로 기울여 수평선과 인물의 수직축이 화면 왼쪽으로 기우는 정적 구도를 보여 줍니다.",
+    "limitation": "왼쪽/오른쪽 명칭은 화면 기준으로 선택했으며 실제 카메라 좌표계와 제조사 표기는 다를 수 있습니다.",
+    "kind": "framing",
+    "qa": { "observable": "수평선이 화면 왼쪽으로 기울고 인물도 함께 회전함", "start": "왼쪽 기울기 방향이 명확함", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:dutch-right",
+    "previewId": "framing:dutch-right",
+    "motion": false,
+    "explanation": "카메라 롤을 오른쪽으로 기울여 수평선과 인물의 수직축이 화면 오른쪽으로 기우는 정적 구도를 보여 줍니다.",
+    "limitation": "왼쪽/오른쪽 명칭은 화면 기준으로 선택했으며 실제 카메라 좌표계와 제조사 표기는 다를 수 있습니다.",
+    "kind": "framing",
+    "qa": { "observable": "수평선이 화면 오른쪽으로 기울고 인물도 함께 회전함", "start": "오른쪽 기울기 방향이 명확함", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:normal",
+    "previewId": "framing:normal",
+    "motion": false,
+    "explanation": "표준 화각은 가까운 전경과 먼 후경의 상대 크기를 과장하지 않는 중간 시야로 그립니다.",
+    "limitation": "표준 렌즈의 초점거리 환산이나 센서 크기를 특정하지 않고 화각 인상만 비교합니다.",
+    "kind": "optics",
+    "qa": { "observable": "전경과 후경의 크기·간격이 과장되지 않고 균형적임", "start": "직선 격자와 중간 크기 인물이 자연스럽게 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:telephoto",
+    "previewId": "framing:telephoto",
+    "motion": false,
+    "explanation": "먼 곳의 큰 인물과 앞뒤 기둥의 간격을 평평하게 보이게 해 좁은 화각과 원근 압축의 인상을 비교합니다.",
+    "limitation": "실제 망원 렌즈의 압축은 관점과 거리의 결과이며 이 도식은 평면 간격을 의도적으로 줄인 시각적 근사입니다.",
+    "kind": "optics",
+    "qa": { "observable": "먼 인물이 크게 보이고 앞뒤 기둥 간격이 좁게 압축됨", "start": "좁은 화각과 평평한 깊이감이 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  },
+  {
+    "itemId": "studiobinder:wide-angle",
+    "previewId": "framing:wide-angle",
+    "motion": false,
+    "explanation": "rectilinear 광각의 넓은 범위와 가까운 전경의 상대적 확대를 직선 격자와 큰 전경 기하로 보여 줍니다.",
+    "limitation": "어안처럼 직선을 휘게 만들지 않는 광각 근사이며 특정 렌즈의 실제 화각·왜곡값은 아닙니다.",
+    "kind": "optics",
+    "qa": { "observable": "넓은 배경과 가까운 큰 전경이 보이지만 격자 직선은 유지됨", "start": "직선 보존과 넓은 시야가 어안 도식과 다르게 보임", "end": "정적 도식이므로 시작과 끝이 동일함" }
+  }
+]

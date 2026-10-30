@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "id": "camera-framing-atlas",
+  "title": "Camera Framing Atlas",
+  "status": "ready",
+  "platforms": ["web"],
+  "tags": ["camera", "framing", "lenses", "visual-reference", "canvas", "responsive"],
+  "preview": "index.html",
+  "thumbnail": "",
+  "sources": [
+    {
+      "id": "scope",
+      "location": "Independent conceptual camera framing and lens diagrams authored for this gallery",
+      "version": "2026-10-30",
+      "method": "Scope and distinctions were recorded from the 33-item camera mapping contract; no source media was copied."
+    },
+    {
+      "id": "gallery",
+      "location": "https://seungwonme.github.io/camera-gallery/",
+      "version": "2026-10-30",
+      "method": "Live Chromium browser observation at 1440x1000 with filter, search, theme, Canvas and card-state checks."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "observed",
+      "source_id": "scope",
+      "locator": "camera-map-framing.json: all 33 entries",
+      "finding": "The public package contains 33 unique itemId/previewId pairs, all in the framing namespace, each with motion:false and explicit explanation, limitation and QA fields."
+    },
+    {
+      "kind": "observed",
+      "source_id": "gallery",
+      "locator": "live page: header, filter group, cards and Canvas labels",
+      "finding": "The gallery renders 33 cards, reports 24 framing and 9 optics/environment items, and exposes named controls and Canvas previews."
+    },
+    {
+      "kind": "measured",
+      "source_id": "gallery",
+      "locator": "1440x1000 viewport; live browser accessibility observation",
+      "finding": "The wide layout uses a two-column card grid, search/filter controls and a 12792px scrollable collection before filtering."
+    },
+    {
+      "kind": "proposed",
+      "source_id": "scope",
+      "locator": "DESIGN.md and preview-camera-framing.js",
+      "finding": "The warm neutral/dark green palette, Canvas diagram grammar and explanatory card hierarchy are authored for this standalone gallery, not extracted from a third-party product."
+    }
+  ],
+  "prototype": {
+    "stack": "Static HTML/CSS/JavaScript with Canvas 2D",
+    "reason": "The gallery needs inspectable, dependency-free previews and deterministic draw calls for 33 diagrams; a framework or backend would add no value to this reference package.",
+    "run": "python3 -m http.server 4173; open http://127.0.0.1:4173/",
+    "token_css": "assets/tokens.css"
+  },
+  "verification": {
+    "new_screen": {
+      "status": "pass",
+      "evidence": ["evidence/browser-checks.json", "evidence/verification.md"],
+      "reason": "The standalone atlas screen is the new screen and was observed rendering all 33 cards with Canvas previews."
+    },
+    "visual": {
+      "status": "pass",
+      "evidence": ["evidence/browser-checks.json", "evidence/verification.md"],
+      "reason": "Live Chromium observation confirmed the card grid, Canvas previews, typography hierarchy, warm/dark surfaces and card detail density."
+    },
+    "states": {
+      "status": "pass",
+      "evidence": ["evidence/browser-checks.json", "evidence/verification.md"],
+      "reason": "Search for 망원, optics/environment filter, dark mode, redraw buttons, source links and empty-result-capable filtering were exercised."
+    },
+    "responsive": {
+      "status": "pass",
+      "evidence": ["evidence/browser-checks.json", "evidence/verification.md"],
+      "reason": "CSS breakpoint rules were checked statically and the wide live viewport was rendered without horizontal overflow; physical mobile devices were not tested."
+    },
+    "accessibility": {
+      "status": "pass",
+      "evidence": ["evidence/browser-checks.json", "evidence/verification.md"],
+      "reason": "Live accessibility observation confirmed named search, filter/theme controls, aria-pressed state, Canvas labels, source links and visible focus behavior. This is not a complete WCAG audit."
+    }
+  },
+  "publication": {
+    "review": "approved",
+    "rights": "cleared",
+    "notes": "Authored Canvas diagrams and text only. No source video, GIF, private media, account data, logos or redistributed third-party assets are included. Public target is the personal ui-references GitHub Pages gallery.",
+    "files": [
+      "DESIGN.md",
+      "tokens.json",
+      "reference.json",
+      "index.html",
+      "app.js",
+      "preview-camera-framing.js",
+      "styles.css",
+      "camera-map-framing.json",
+      "evidence/browser-checks.json",
+      "evidence/verification.md"
+    ]
+  }
+}

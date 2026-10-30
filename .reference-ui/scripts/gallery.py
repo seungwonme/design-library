@@ -28,7 +28,7 @@ RUNTIME_FILES = (
     "tests/test_token_contract.py",
 )
 SKILL_FILES = RUNTIME_FILES + (
-    "SKILL.md", "README.md", "references/setup.md", "references/extraction.md",
+    "SKILL.md", "README.md", "references/SETUP.md", "references/extraction.md",
     "references/package-contract.md", "references/gallery-and-reuse.md",
     "references/rea-extraction.md", "references/taste-and-prototype.md",
     "tests/test_reference_ui.py", "tests/token-contract-report.md", "tests/eval-cases.json", "tests/eval-report.md",
@@ -280,8 +280,21 @@ def project_skill_file(relative, api):
     return content.encode("utf-8")
 
 
+def bundle_file_path(worktree, name, api):
+    api.require(isinstance(name, str) and name and not any(c in name for c in "\\:") and not any(ord(c) < 32 for c in name), "Bundle paths must be non-empty forward-slash relative file paths.")
+    api.require(all(part and part not in (".", "..") and part.casefold() != ".git" for part in name.split("/")), "Bundle paths must be canonical checkout paths outside .git.")
+    target = managed_path(worktree, name, api)
+    for parent in target.parents:
+        if parent == worktree:
+            break
+        api.require(not parent.exists() or parent.is_dir(), f"Bundle parent is not a directory: {name}")
+    api.require(not target.exists() or target.is_file(), f"Bundle target is not a regular file: {name}")
+    return target
+
+
 def install_bundle(worktree, default_branch, api, project_skill=False):
     api.require(re.fullmatch(r"[A-Za-z0-9._/-]+", default_branch), "Default branch name cannot be embedded safely in the workflow template.")
+    api.require(worktree.is_dir() and not worktree.is_symlink(), "Bundle checkout must be a real directory.")
     generated = {}
     for relative in RUNTIME_FILES:
         generated[".reference-ui/" + relative] = (api.SKILL_ROOT / relative).read_bytes()
@@ -309,18 +322,40 @@ runpy.run_path(str(runner), run_name="__main__")
     generated["scripts/gallery.py"] = wrapper.encode()
     generated["scripts/gallery.py.lock"] = (api.SKILL_ROOT / "scripts/reference-ui.py.lock").read_bytes()
     generated[".github/workflows/pages.yml"] = (api.ASSETS / "pages.yml").read_text().replace("DEFAULT_BRANCH", default_branch).encode()
-    manifest_path = managed_path(worktree, ".reference-ui/bundle.json", api)
+    manifest_path = bundle_file_path(worktree, ".reference-ui/bundle.json", api)
     previous = api.load_json(manifest_path).get("files", {}) if manifest_path.exists() else {}
+    api.require(isinstance(previous, dict), "Bundle manifest files must map paths to SHA-256 hashes.")
+    removed = {}
+    for name, digest in previous.items():
+        target = bundle_file_path(worktree, name, api)
+        api.require(name.casefold() != ".reference-ui/bundle.json", "Bundle manifest cannot manage itself.")
+        api.require(isinstance(digest, str) and re.fullmatch(r"[0-9a-f]{64}", digest), f"Invalid managed-file hash: {name}")
+        if target.exists():
+            api.require(hashlib.sha256(target.read_bytes()).hexdigest() == digest, f"Managed file was edited outside the generator: {name}; review it before updating.")
+        if name not in generated:
+            removed[name] = target
     for name, data in generated.items():
-        target = managed_path(worktree, name, api)
-        if target.exists() and target.read_bytes() != data:
-            api.require(name in previous and hashlib.sha256(target.read_bytes()).hexdigest() == previous[name], f"Managed file was edited outside the generator: {name}; review it before updating.")
+        target = bundle_file_path(worktree, name, api)
+        if target.exists() and name not in previous and target.read_bytes() != data:
+            renamed = any(name.casefold() == old.casefold() and old_target.exists() and target.samefile(old_target) for old, old_target in removed.items())
+            api.require(renamed, f"Managed file was edited outside the generator: {name}; review it before updating.")
+    # Unlink the old identity first so case-only renames also work on case-insensitive filesystems.
+    for target in removed.values():
+        target.unlink(missing_ok=True)
     for name, data in generated.items():
         target = worktree / name
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(data)
     manifest_path.write_text(api.dump_json({"version": VERSION, "project_skill": PROJECT_SKILL_NAME if project_skill else None, "files": {name: hashlib.sha256(data).hexdigest() for name, data in generated.items()}}), encoding="utf-8")
-    return list(generated) + [".reference-ui/bundle.json"]
+    return list(generated) + [".reference-ui/bundle.json"], list(removed)
+
+
+def stage_bundle(worktree, managed, removed):
+    # A case-insensitive index can retain the old spelling after filesystem rename.
+    # Remove only manifest-validated retired identities before adding the new ones.
+    if removed:
+        command(["git", "update-index", "--force-remove", "--", *removed], cwd=worktree)
+    command(["git", "add", "--", *managed], cwd=worktree)
 
 
 def wait_workflow(repo, commit, event, timeout):
@@ -456,14 +491,14 @@ def publish(args, workspace, data, api):
             destination = api.safe_path(target, relative)
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source / relative, destination)
-        managed = install_bundle(worktree, default_branch, api, project_skill=args.project_skill)
+        managed, removed = install_bundle(worktree, default_branch, api, project_skill=args.project_skill)
         if style is not None:
             managed_path(worktree, "gallery.css", api).write_text(style, encoding="utf-8")
             managed.append("gallery.css")
         built = build_site(worktree, run / "site", api)
         api.require(metadata["id"] in built["entries"], "Local build omitted the requested entry.")
         progress("local-build", f"{metadata['id']}: {built['files']} files")
-        command(["git", "add", "--", *managed, "references/" + metadata["id"]], cwd=worktree)
+        stage_bundle(worktree, [*managed, "references/" + metadata["id"]], removed)
         command(["git", "diff", "--cached", "--check"], cwd=worktree)
         changed = command(["git", "diff", "--cached", "--quiet"], cwd=worktree, check=False).returncode
         api.require(changed == 1, "No changed reference/runtime files to publish.")

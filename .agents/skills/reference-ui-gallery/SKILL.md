@@ -1,6 +1,6 @@
 ---
 name: reference-ui-gallery
-description: "이 갤러리 저장소에서 Extracts web/app UI into reusable design-system packages and maintains the reference gallery, including previews, homepage/themes and GitHub Pages publishing. Use for UI extraction, reference-package creation or verification, and gallery repository maintenance. Do not use for implementation-only reuse in a separate product, routine UI fixes, or non-UI binary analysis."
+description: "이 갤러리 저장소에서 Use for: Extract web/app UI into reusable design-system packages; verify packages and maintain gallery previews, homepage/themes, and GitHub Pages publishing. Not for implementation-only reuse in another product, routine UI fixes, or non-UI binary analysis."
 compatibility: "Python 3.10+, uv and Git; GitHub CLI for repository setup and publication. Extraction and visual verification require a suitable browser, app inspector, or user-provided captures."
 metadata:
   version: "0.6.0"
@@ -24,7 +24,7 @@ REA는 원본 분석, taste-skill은 용도에 맞는 시각 방향과 개선, M
 
 | 조건 | 참조 |
 |---|---|
-| 최초 사용, 저장 경로/원격 변경, 설정 오류 | [설정](references/setup.md) |
+| 최초 사용, 저장 경로/원격 변경, 설정 오류 | [설정](references/SETUP.md) |
 | 웹/앱/스크린샷에서 UI 추출 | [추출](references/extraction.md) |
 | REA로 앱/번들/웹 분석, 분석 결과를 디자인 근거로 연결 | [REA 추출](references/rea-extraction.md) |
 | 시각 방향 탐색, Taste 적용, 대표 화면과 구조 변형 비교 | [Taste와 prototype](references/taste-and-prototype.md) |
@@ -34,7 +34,7 @@ REA는 원본 분석, taste-skill은 용도에 맞는 시각 방향과 개선, M
 ## 작업 순서
 
 1. 원본, 대상 화면, 플랫폼과 검증할 디자인 질문을 정한다. 대화에서 정한 범위를 재사용한다. 원본이 없으면 사용 가능한 자료를 먼저 조사하고 추출 가능한 범위를 밝힌다.
-2. [설정](references/setup.md)에 따라 현재 갤러리의 실행 진입점을 고르고 `--help`, `doctor`로 대상 저장소를 확인한다. 연결된 갤러리가 없으면 설정 참조에 따라 연결한다.
+2. [설정](references/SETUP.md)에 따라 현재 갤러리의 실행 진입점을 고르고 `--help`, `doctor`로 대상 저장소를 확인한다. 연결된 갤러리가 없으면 설정 참조에 따라 연결한다.
 3. 추출은 [REA 분석 경로](references/rea-extraction.md)에서 도구를 고르고 원본 근거를 수집한다. 패키지 재사용 검증은 기존 `DESIGN.md`, `tokens.json`, 미리보기를 읽고 사실과 추론/새 제안을 구분한다.
 4. 항목을 만들거나 바꾸면 산출물 계약에 맞춰 규칙/토큰과 프로토타입을 기록한다. 갤러리 화면/테마 수정은 [갤러리 관리](references/gallery-and-reuse.md#갤러리-관리)의 저장소 소유 파일과 생성물 경계를 따른다.
 5. 시각 방향이나 비교 질문이 있으면 [Taste와 prototype](references/taste-and-prototype.md)에서 목적에 맞는 절차를 고른다. 기존 스택을 존중하며 신규 스택은 요구와 검증 목적을 근거로 선택한다.

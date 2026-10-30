@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/reference-ui.py"
@@ -315,6 +316,207 @@ class ReferenceUiTest(unittest.TestCase):
         spec.loader.exec_module(gallery)
         return api, gallery
 
+    def bundle_fixture(self, label, project_skill=False):
+        api, gallery = self.bundle_modules()
+        worktree = self.base / label
+        worktree.mkdir()
+        api.SKILL_ROOT = self.base / (label + "-source")
+        api.ASSETS = api.SKILL_ROOT / "assets"
+        files = {
+            "assets/kept.txt": b"Previous generated content\n",
+            "assets/removed.txt": b"Retired generated content\n",
+            "assets/missing.txt": b"Another retired file\n",
+            "assets/pages.yml": b"branches: [DEFAULT_BRANCH]\n",
+            "scripts/reference-ui.py.lock": b"Synthetic lock\n",
+            "references/setup.md": b"Previous setup instructions\n",
+        }
+        for name, data in files.items():
+            path = api.SKILL_ROOT / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        gallery.RUNTIME_FILES = ("assets/kept.txt", "assets/removed.txt", "assets/missing.txt")
+        gallery.SKILL_FILES = ("references/setup.md",)
+        gallery.install_bundle(worktree, "main", api, project_skill=project_skill)
+        gallery.RUNTIME_FILES = ("assets/kept.txt",)
+        (api.ASSETS / "kept.txt").write_bytes(b"Updated generated content\n")
+        return api, gallery, worktree
+
+    def bundle_snapshot(self):
+        snapshot = {}
+        for path in self.base.rglob("*"):
+            if path.is_symlink():
+                value = ("symlink", str(path.readlink()))
+            elif path.is_file():
+                value = ("file", path.read_bytes())
+            else:
+                value = ("other", path.stat().st_mode)
+            snapshot[path.relative_to(self.base).as_posix()] = value
+        return snapshot
+
+    def test_bundle_removes_retired_files_and_keeps_unmanaged_files(self):
+        api, gallery, worktree = self.bundle_fixture("retired")
+        removed = ".reference-ui/assets/removed.txt"
+        missing = ".reference-ui/assets/missing.txt"
+        (worktree / missing).unlink()
+        unmanaged = worktree / ".reference-ui/assets/user.txt"
+        unmanaged.write_bytes(b"User-owned content\n")
+        managed, retired = gallery.install_bundle(worktree, "release", api)
+        self.assertFalse((worktree / removed).exists())
+        self.assertFalse((worktree / missing).exists())
+        self.assertEqual(unmanaged.read_bytes(), b"User-owned content\n")
+        self.assertEqual((worktree / ".reference-ui/assets/kept.txt").read_bytes(), b"Updated generated content\n")
+        manifest = json.loads((worktree / ".reference-ui/bundle.json").read_text())
+        self.assertNotIn(removed, manifest["files"])
+        self.assertNotIn(missing, manifest["files"])
+        self.assertNotIn(unmanaged.relative_to(worktree).as_posix(), manifest["files"])
+        self.assertIn(removed, retired)
+        self.assertIn(missing, retired)
+        self.assertIn("branches: [release]", (worktree / ".github/workflows/pages.yml").read_text())
+
+    def test_bundle_modified_files_block_all_writes_and_retirements(self):
+        for name in ("missing.txt", "kept.txt"):
+            with self.subTest(name=name):
+                api, gallery, worktree = self.bundle_fixture("modified-" + name)
+                (worktree / ".reference-ui/assets" / name).write_bytes(b"User-owned edit\n")
+                # Matching the new generator still does not authorize an edit to an old managed file.
+                (api.ASSETS / name).write_bytes(b"User-owned edit\n")
+                before = self.bundle_snapshot()
+                with self.assertRaisesRegex(api.UserError, "edited outside"):
+                    gallery.install_bundle(worktree, "release", api)
+                self.assertEqual(self.bundle_snapshot(), before)
+
+    def test_bundle_retired_unsafe_targets_fail_before_any_mutation(self):
+        import os
+        kinds = ("symlink", "dangling-symlink", "parent-symlink", "directory", "hard-link")
+        if hasattr(os, "mkfifo"):
+            kinds += ("fifo",)
+        for kind in kinds:
+            with self.subTest(kind=kind):
+                api, gallery, worktree = self.bundle_fixture("unsafe-" + kind)
+                target = worktree / ".reference-ui/assets/missing.txt"
+                outside = api.SKILL_ROOT / "user.txt"
+                outside.write_bytes(target.read_bytes())
+                if kind == "parent-symlink":
+                    moved = api.SKILL_ROOT / "old-assets"
+                    target.parent.rename(moved)
+                    target.parent.symlink_to(moved, target_is_directory=True)
+                elif kind == "hard-link":
+                    (api.SKILL_ROOT / "linked.txt").hardlink_to(target)
+                else:
+                    target.unlink()
+                    if kind == "directory":
+                        target.mkdir()
+                        (target / "user.txt").write_bytes(b"User-owned directory\n")
+                    elif kind == "fifo":
+                        os.mkfifo(target)
+                    else:
+                        target.symlink_to(outside if kind == "symlink" else api.SKILL_ROOT / "absent")
+                before = self.bundle_snapshot()
+                with self.assertRaises(api.UserError):
+                    gallery.install_bundle(worktree, "release", api)
+                self.assertEqual(self.bundle_snapshot(), before)
+
+    def test_bundle_invalid_manifest_paths_and_hashes_preserve_every_file(self):
+        cases = ("traversal", "absolute", "empty", "dot", "alias", "backslash", "git", "manifest", "hash", "files")
+        for kind in cases:
+            with self.subTest(kind=kind):
+                api, gallery, worktree = self.bundle_fixture("invalid-" + kind)
+                outside = api.SKILL_ROOT / "user.txt"
+                outside.write_bytes(b"User-owned content\n")
+                manifest_path = worktree / ".reference-ui/bundle.json"
+                manifest = json.loads(manifest_path.read_text())
+                paths = {"traversal": "../" + outside.parent.name + "/user.txt", "absolute": str(outside),
+                         "empty": "", "dot": ".", "alias": ".reference-ui//assets/removed.txt",
+                         "backslash": ".reference-ui\\assets\\removed.txt", "git": ".git/config",
+                         "manifest": ".reference-ui/bundle.json"}
+                if kind == "files":
+                    manifest["files"] = []
+                elif kind == "hash":
+                    manifest["files"][".reference-ui/assets/removed.txt"] = "not-a-hash"
+                else:
+                    manifest["files"][paths[kind]] = gallery.hashlib.sha256(outside.read_bytes()).hexdigest()
+                manifest_path.write_text(api.dump_json(manifest))
+                before = self.bundle_snapshot()
+                with self.assertRaises(api.UserError):
+                    gallery.install_bundle(worktree, "release", api)
+                self.assertEqual(self.bundle_snapshot(), before)
+
+    def test_bundle_new_target_conflicts_block_retirements(self):
+        for kind in ("file", "parent"):
+            with self.subTest(kind=kind):
+                api, gallery, worktree = self.bundle_fixture("conflict-" + kind)
+                relative = "assets/new.txt" if kind == "file" else "assets/new/child.txt"
+                source = api.SKILL_ROOT / relative
+                source.parent.mkdir(parents=True, exist_ok=True)
+                source.write_bytes(b"New generated file\n")
+                gallery.RUNTIME_FILES += (relative,)
+                target = worktree / ".reference-ui" / relative
+                (target if kind == "file" else target.parent).write_bytes(b"User-owned content\n")
+                before = self.bundle_snapshot()
+                with self.assertRaises(api.UserError):
+                    gallery.install_bundle(worktree, "release", api)
+                self.assertEqual(self.bundle_snapshot(), before)
+
+    def test_bundle_case_only_rename_removes_old_identity_before_writing(self):
+        for emulate_case_insensitive in (False, True):
+            with self.subTest(emulate_case_insensitive=emulate_case_insensitive):
+                api, gallery, worktree = self.bundle_fixture("rename-" + str(emulate_case_insensitive), project_skill=True)
+                old = gallery.PROJECT_SKILL_ROOT + "/references/setup.md"
+                new = gallery.PROJECT_SKILL_ROOT + "/references/SETUP.md"
+                source = api.SKILL_ROOT / "references/setup.md"
+                source.rename(source.with_name("SETUP.md"))
+                source.with_name("SETUP.md").write_bytes(b"Updated setup instructions\n")
+                gallery.SKILL_FILES = ("references/SETUP.md",)
+                lookup = gallery.managed_path
+                write = Path.write_bytes
+
+                def managed_path(root, name, module):
+                    if emulate_case_insensitive and root == worktree and name == new:
+                        return lookup(root, old, module)
+                    return lookup(root, name, module)
+
+                def write_bytes(path, data):
+                    if path == worktree / new:
+                        self.assertFalse((worktree / old).exists())
+                    return write(path, data)
+
+                with patch.object(gallery, "managed_path", side_effect=managed_path), patch.object(Path, "write_bytes", write_bytes):
+                    managed, retired = gallery.install_bundle(worktree, "main", api, project_skill=True)
+                self.assertEqual([path.name for path in (worktree / new).parent.iterdir()], ["SETUP.md"])
+                self.assertEqual((worktree / new).read_bytes(), b"Updated setup instructions\n")
+                manifest = json.loads((worktree / ".reference-ui/bundle.json").read_text())
+                self.assertNotIn(old, manifest["files"])
+                self.assertIn(new, manifest["files"])
+                self.assertIn(old, retired)
+                self.assertIn(new, managed)
+
+    def test_bundle_case_only_rename_survives_case_insensitive_git_index(self):
+        api, gallery, worktree = self.bundle_fixture("git-rename", project_skill=True)
+        subprocess.run(["git", "init", "-q", str(worktree)], check=True)
+        subprocess.run(["git", "-C", str(worktree), "config", "core.ignorecase", "true"], check=True)
+        subprocess.run(["git", "-C", str(worktree), "add", "--", ".reference-ui", "scripts", ".github", ".agents"], check=True)
+        old = gallery.PROJECT_SKILL_ROOT + "/references/setup.md"
+        new = gallery.PROJECT_SKILL_ROOT + "/references/SETUP.md"
+        source = api.SKILL_ROOT / "references/setup.md"
+        source.rename(source.with_name("SETUP.md"))
+        gallery.SKILL_FILES = ("references/SETUP.md",)
+        managed, retired = gallery.install_bundle(worktree, "main", api, project_skill=True)
+        gallery.stage_bundle(worktree, managed, retired)
+        indexed = subprocess.check_output(["git", "-C", str(worktree), "ls-files", "-z"], text=True).split("\0")
+        self.assertIn(new, indexed)
+        self.assertNotIn(old, indexed)
+        self.assertNotIn(".reference-ui/assets/removed.txt", indexed)
+        self.assertEqual(subprocess.check_output(["git", "-C", str(worktree), "config", "core.ignorecase"], text=True).strip(), "true")
+
+    def test_bundle_manifest_is_not_updated_when_writing_fails(self):
+        api, gallery, worktree = self.bundle_fixture("write-failure")
+        manifest_path = worktree / ".reference-ui/bundle.json"
+        before = manifest_path.read_bytes()
+        with patch.object(Path, "write_bytes", side_effect=OSError("Synthetic write failure")):
+            with self.assertRaisesRegex(OSError, "Synthetic write failure"):
+                gallery.install_bundle(worktree, "main", api)
+        self.assertEqual(manifest_path.read_bytes(), before)
+
     def test_minimal_runtime_check_runs_tests_and_rejects_zero_run(self):
         self.public_ready()
         api, gallery = self.bundle_modules()
@@ -345,7 +547,7 @@ class ReferenceUiTest(unittest.TestCase):
         gallery.install_bundle(self.repo, "main", api, project_skill=True)
         skill = self.repo / ".agents/skills/reference-ui-gallery"
         self.assertIn("name: reference-ui-gallery\n", (skill / "SKILL.md").read_text())
-        for relative in ("README.md", "references/extraction.md", "references/setup.md", "tests/test_reference_ui.py", "assets/config.example.json"):
+        for relative in ("README.md", "references/extraction.md", "references/SETUP.md", "tests/test_reference_ui.py", "assets/config.example.json"):
             self.assertTrue((skill / relative).is_file(), relative)
         self.assertEqual(json.loads((skill / "assets/config.example.json").read_text())["workspace_path"], "")
         import shutil
@@ -363,7 +565,7 @@ class ReferenceUiTest(unittest.TestCase):
         gallery.install_bundle(self.repo, "main", api, project_skill=True)
         missing = self.repo / ".agents/skills/reference-ui-gallery/references/extraction.md"
         missing.unlink()
-        managed = gallery.install_bundle(self.repo, "main", api)
+        managed, _ = gallery.install_bundle(self.repo, "main", api)
         self.assertTrue(missing.is_file())
         self.assertIn(".agents/skills/reference-ui-gallery/SKILL.md", managed)
         self.assertEqual(json.loads((self.repo / ".reference-ui/bundle.json").read_text())["project_skill"], "reference-ui-gallery")
@@ -381,7 +583,7 @@ class ReferenceUiTest(unittest.TestCase):
         (self.repo / ".agents").unlink()
         gallery.install_bundle(self.repo, "main", api, project_skill=True)
         manifest = (self.repo / ".reference-ui/bundle.json").read_bytes()
-        source = self.repo / ".agents/skills/reference-ui-gallery/references/setup.md"
+        source = self.repo / ".agents/skills/reference-ui-gallery/references/SETUP.md"
         source.write_text("User-owned instructions")
         with self.assertRaises(api.UserError):
             gallery.install_bundle(self.repo, "main", api)
