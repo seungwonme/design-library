@@ -64,7 +64,7 @@
 
 ## 공개 파일과 CSS 생성
 
-공개할 때 publication.files에 항목 기준 상대 파일 경로 배열을 넣는다. 미리보기, DESIGN.md, tokens.json, reference.json, 썸네일과 연결된 검증 근거를 포함한다. 목록 밖 파일은 내보내지 않는다.
+초안 빌드(`build --drafts`)와 공개 빌드 모두 publication.files에 기존 입력 파일의 항목 기준 상대 경로 배열을 넣는다. 미리보기, DESIGN.md, tokens.json, reference.json, 사용할 썸네일과 연결된 검증 근거를 포함한다. prototype.token_css의 생성 경로는 이 입력 목록에서 제외하며 빌더가 별도로 생성한다. 그 외 목록 밖 입력 파일은 내보내지 않는다.
 
 웹 미리보기에서 토큰 CSS가 필요하면 prototype.token_css에 생성 경로를 적는다. 해당 CSS는 수동 입력 파일로 두지 않는다. 빌더가 토큰의 `$extensions.reference-ui.css_name`과 `theme`(base/light/dark)를 읽어 생성한다. 이 확장은 자체 CSS 어댑터의 계약이며 DTCG Resolver 형식이 아니다.
 
