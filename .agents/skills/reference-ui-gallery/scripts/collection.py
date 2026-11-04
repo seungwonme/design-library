@@ -34,7 +34,7 @@ def save_image(workspace, slug, source, api):
 
 
 def collect(args, workspace, api):
-    api.require(args.source or args.image, "Supply a source URL, a local image, or both.")
+    api.require(args.source or args.image or (args.title and args.note), "Supply a URL, image, or a title with a short note.")
     if args.source:
         book.web_source(args.source, api)
     root = api.entry_root(workspace, args.slug)
@@ -58,7 +58,8 @@ def collect(args, workspace, api):
     data = api.load_json(api.ASSETS / "bookmark-template.json")
     data.update(id=args.slug, title=args.title or (urlsplit(args.source).hostname if args.source else image.stem), category=args.category,
                 url=args.source or "", note=args.note, tags=list(dict.fromkeys(args.tag)),
-                platforms=[args.platform], saved_at=date.today().isoformat())
+                platforms=[args.platform], saved_at=date.today().isoformat(),
+                source_kind="link" if args.source else "image" if image else "note")
     validate(root, data, api)
     root.mkdir(parents=True)
     (root / "reference.json").write_text(api.dump_json(data), encoding="utf-8")
@@ -76,6 +77,10 @@ def validate(root, data, api, public=False):
     if data["url"]:
         book.web_source(data["url"], api)
     require(isinstance(data.get("note"), str), "note must be text; an empty note is allowed.")
+    kind = data.get("source_kind", "link" if data["url"] else "image")
+    require(api.choice(kind, {"link", "image", "note"}), "source_kind must be link, image, or note.")
+    require((kind == "link") == bool(data["url"]), "Link records need a URL; local images and notes leave it empty.")
+    require(kind != "note" or api.nonempty(data["note"]), "A text-only record needs a note.")
     require(isinstance(data.get("tags"), list) and all(api.nonempty(x) for x in data["tags"]), "tags must be a string array.")
     platforms = data.get("platforms")
     require(isinstance(platforms, list) and platforms and all(api.choice(x, {"web", "mobile", "desktop"}) for x in platforms), "Choose valid platforms.")
@@ -86,7 +91,7 @@ def validate(root, data, api, public=False):
     publication = data.get("publication")
     require(isinstance(publication, dict) and api.choice(publication.get("review"), {"pending", "approved", "rejected"}) and api.choice(publication.get("rights"), {"unreviewed", "cleared", "blocked"}), "publication needs review and rights status.")
     if public:
-        require(data["url"], "Image-only records stay local until packaged with explicitly approved assets.")
+        require(kind != "image", "Image-only records stay local until packaged with explicitly approved assets.")
         require(publication["review"] == "approved" and publication["rights"] == "cleared" and api.nonempty(publication.get("notes")), "Public links need an explicit publication review.")
     return data, {"id": root.name, "record_type": "bookmark", "check": "saved-link", "visual_quality": "not-assessed"}
 
@@ -118,7 +123,7 @@ def render(data, api, custom_style=False, thumbnail=""):
     target = data["url"] or ("../../" + thumbnail if thumbnail else "")
     source_button = '<a class="source-button" href="' + esc(target, quote=True) + '" target="_blank" rel="noopener noreferrer">' + ("원본 열기" if data["url"] else "이미지 열기") + '</a>' if target else ''
     values = {"TITLE": esc(data["title"]), "CATEGORY": esc(book.CATEGORIES[data["category"]]),
-              "SOURCE_BUTTON": source_button, "DOMAIN": esc(urlsplit(data["url"]).hostname or "로컬 이미지"),
+              "SOURCE_BUTTON": source_button, "DOMAIN": esc(urlsplit(data["url"]).hostname or ("메모" if data.get("source_kind") == "note" else "로컬 이미지")),
               "NOTE": esc(data["note"] or "메모 없이 저장한 자료입니다."), "DATE": esc(data["saved_at"]),
               "TAGS": ''.join('<span class="tag">' + esc(tag) + '</span>' for tag in data["tags"]),
               "IMAGE": image, "CUSTOM_STYLE": '<link rel="stylesheet" href="../../gallery.css">' if custom_style else ''}

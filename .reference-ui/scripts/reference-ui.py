@@ -426,7 +426,7 @@ def parser():
     note.add_argument("--source", required=True)
     note.add_argument("--platform", required=True, choices=("web", "mobile", "desktop"))
     note.add_argument("--category", required=True, choices=("reference", "library", "asset", "guideline", "design-system", "inbox", "flow"))
-    collect = commands.add_parser("collect", help="Save a link and optional note/image; defaults to inbox, without assessment or publication")
+    collect = commands.add_parser("collect", help="Save a link, image, or short text note; defaults to inbox, without assessment or publication")
     collect.add_argument("slug")
     collect.add_argument("--source")
     collect.add_argument("--title")

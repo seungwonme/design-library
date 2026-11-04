@@ -16,7 +16,7 @@ uv --no-config run --locked --script scripts/gallery.py collect <slug> --source 
 uv --no-config run --locked --script scripts/gallery.py view
 ```
 
-필드와 옵션은 `collect --help`, [빈 저장 기록](../assets/bookmark-template.json)을 따른다. URL 또는 이미지 하나면 저장할 수 있고, 둘을 함께 주어도 된다. 이미지가 없으면 사이트 이름으로 표시한다. 저장하려고 평가문, 반례, 토큰, 프로토타입, 실행 검증을 채우지 않는다.
+필드와 옵션은 `collect --help`, [빈 저장 기록](../assets/bookmark-template.json)을 따른다. URL, 이미지, 제목과 짧은 메모 중 하나로 저장한다. 직접 적은 UX 규칙은 URL 없이 제목과 `--note`로 보관할 수 있다. 링크에 이미지가 없으면 사이트 이름으로 표시한다. 저장하려고 평가문, 반례, 토큰, 프로토타입, 실행 검증을 채우지 않는다.
 
 ## 분류
 

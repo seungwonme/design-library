@@ -1,5 +1,6 @@
 """Design-book boundary checks against the real CLI and built artifacts."""
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -19,8 +20,8 @@ class DesignBookTest(unittest.TestCase):
         self.call("note", "sample", "--title", "A useful reference", "--source", "https://example.org/reference", "--platform", "web", "--category", "guideline")
         self.path = self.repo / "references/sample/reference.json"
 
-    def call(self, *args, ok=True):
-        result = subprocess.run([sys.executable, str(ROOT / "scripts/reference-ui.py"), "--workspace", str(self.repo), *args], capture_output=True, text=True)
+    def call(self, *args, ok=True, env=None):
+        result = subprocess.run([sys.executable, str(ROOT / "scripts/reference-ui.py"), "--workspace", str(self.repo), *args], capture_output=True, text=True, env=env)
         self.assertEqual(result.returncode, 0 if ok else 1, result.stdout + result.stderr)
         return json.loads(result.stdout or result.stderr)
 
@@ -149,7 +150,8 @@ class DesignBookTest(unittest.TestCase):
         path.write_text(json.dumps(data))
         ignored = subprocess.run(["git", "check-ignore", ".reference-previews/bookmark.png"], cwd=self.repo, capture_output=True)
         self.assertEqual(ignored.returncode, 0)
-        self.call("build", "--drafts", "--output", str(self.repo / "local"))
+        self.call("build", "--drafts", "--output", str(self.repo / "ci-local"), env={**os.environ, "GITHUB_ACTIONS": "true"}, ok=False)
+        self.call("build", "--drafts", "--output", str(self.repo / "local"), env={**os.environ, "GITHUB_ACTIONS": "false"})
         self.assertEqual((self.repo / "local/previews/bookmark.png").read_bytes(), image.read_bytes())
         self.assertIn("previews/bookmark.png", (self.repo / "local/references/bookmark/index.html").read_text())
         self.call("build", "--output", str(self.repo / "public"))
@@ -163,11 +165,22 @@ class DesignBookTest(unittest.TestCase):
         self.call("collect", "drawing", "--image", str(image))
         record = self.repo / "references/drawing/reference.json"
         self.assertEqual(json.loads(record.read_text())["url"], "")
-        self.call("build", "--drafts", "--output", str(self.repo / "image-view"))
+        self.call("build", "--drafts", "--output", str(self.repo / "image-view"), env={**os.environ, "GITHUB_ACTIONS": "false"})
         page = (self.repo / "image-view/references/drawing/index.html").read_text()
         self.assertIn("이미지 열기", page)
         self.assertIn("../../previews/drawing.png", page)
         self.call("validate", "drawing", "--public", ok=False)
+
+    def test_text_only_ux_rule_needs_no_url_or_assessment(self):
+        self.call("collect", "keep-input", "--title", "입력 보존", "--note", "오류가 나도 입력한 값은 보존한다.", "--category", "guideline")
+        data = json.loads((self.repo / "references/keep-input/reference.json").read_text())
+        self.assertEqual(data["source_kind"], "note")
+        self.assertEqual(data["url"], "")
+        self.assertNotIn("assessment", data)
+        self.call("build", "--drafts", "--output", str(self.repo / "rule-view"), env={**os.environ, "GITHUB_ACTIONS": "false"})
+        page = (self.repo / "rule-view/references/keep-input/index.html").read_text()
+        self.assertIn(data["note"], page)
+        self.assertNotIn('class="source-button"', page)
 
 
 if __name__ == "__main__":

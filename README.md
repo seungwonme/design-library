@@ -75,7 +75,7 @@ uv --no-config run --locked --script scripts/gallery.py collect <id> --source <u
 uv --no-config run --locked --script scripts/gallery.py view
 ```
 
-명령은 저장소 루트에서 실행합니다. `collect`의 기본 분류는 수집함입니다. `--image <path>`로 이미지만 저장하거나 링크에 캡처를 붙일 수 있습니다. `view`가 출력하는 URL을 브라우저에서 열면 미공개 자료와 로컬 이미지까지 보입니다. 서버는 Ctrl-C로 종료하며, 새 자료를 저장한 뒤 `view`를 다시 실행하면 새 목록을 만듭니다. 래퍼는 이 checkout을 직접 선택합니다.
+명령은 저장소 루트에서 실행합니다. `collect`의 기본 분류는 수집함입니다. `--image <path>`로 이미지만 저장하거나 링크에 캡처를 붙일 수 있습니다. 직접 적은 UX 규칙은 URL 없이 `--title`과 `--note`만으로 저장할 수 있습니다. `view`가 출력하는 URL을 브라우저에서 열면 미공개 자료와 로컬 이미지까지 보입니다. 서버는 Ctrl-C로 종료하며, 새 자료를 저장한 뒤 `view`를 다시 실행하면 새 목록을 만듭니다. 래퍼는 이 checkout을 직접 선택합니다.
 
 디자인 시스템을 재사용할 때는 글꼴, 의미 색상, 간격과 컴포넌트 규칙을 대상 서비스에 맞게 적용합니다. 원본 사진과 특정 화면 배치는 재현 요청이나 대상 콘텐츠에 필요한 경우에 사용합니다.
 
