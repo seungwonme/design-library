@@ -1,0 +1,96 @@
+{
+  "schema_version": 2,
+  "record_type": "note",
+  "id": "dtcg-token-model",
+  "title": "DTCG / 값과 의미를 연결하는 토큰",
+  "status": "ready",
+  "category": "design-system",
+  "platforms": [
+    "web"
+  ],
+  "tags": [
+    "토큰",
+    "별칭",
+    "의미 색상",
+    "DTCG",
+    "공식 문서"
+  ],
+  "summary": "도구 간에 토큰의 값, 타입, 그룹과 참조를 전달하는 DTCG 2025.10 형식과 기존 갤러리의 지원 범위를 함께 읽습니다.",
+  "sources": [
+    {
+      "id": "official",
+      "title": "Design Tokens Format Module 2025.10",
+      "location": "https://www.designtokens.org/tr/2025.10/format/",
+      "method": "공식 문서 본문을 읽음",
+      "access": "read"
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "observed",
+      "source_id": "official",
+      "locator": "Abstract / Design token / Aliases",
+      "finding": "도구 간 교환을 위한 값, 타입, 그룹과 참조를 정의합니다."
+    },
+    {
+      "kind": "proposed",
+      "source_id": "official",
+      "locator": "제품의 토큰 계층 설계",
+      "finding": "원시/의미/컴포넌트의 역할 분리는 적용을 위한 설계 제안이며 특정 규격의 필수 계층이라고 단정하지 않습니다."
+    }
+  ],
+  "assessment": {
+    "why": "색상표를 넘어 값의 타입과 재사용 관계를 기록하는 기준입니다. 소비 도구가 무엇을 지원하는지도 함께 확인하게 합니다.",
+    "use_when": [
+      "디자인 도구와 코드 사이에서 토큰을 교환할 때",
+      "브랜드 값과 의미 있는 역할 이름을 분리하고 테마 변경의 영향을 줄일 때"
+    ],
+    "avoid_when": [
+      "DTCG를 따른다는 표현만으로 모든 소비 도구가 모든 기능을 지원한다고 가정하지 않습니다.",
+      "이 갤러리 검사기는 제한된 프로파일을 사용하며 $root/$extends/$ref 등 미지원 구조를 거부합니다.",
+      "교환 형식이 제품에 적절한 색 대비나 상태 설계를 자동 보장하지 않습니다."
+    ],
+    "takeaways": [
+      "타입과 값을 함께 보관하고 별칭으로 의미를 연결합니다.",
+      "토큰 이름에는 적용할 역할을 드러내고 테마와 상태의 사용 규칙을 문서화합니다.",
+      "규격 버전과 소비 도구의 지원 범위를 함께 기록합니다."
+    ]
+  },
+  "details": [
+    {
+      "label": "정본",
+      "value": "2025.10 Final Community Group Report. W3C 표준과는 구분."
+    },
+    {
+      "label": "원시 토큰",
+      "value": "색상과 간격의 기초 값"
+    },
+    {
+      "label": "의미 토큰",
+      "value": "기초 값을 별칭으로 참조하는 foreground, surface, action 등의 역할"
+    },
+    {
+      "label": "컴포넌트 토큰",
+      "value": "필요할 때 특정 컴포넌트 상태와 연결하는 제품의 설계 선택"
+    },
+    {
+      "label": "기존 자료",
+      "value": "갤러리의 Apple/Aside 추출 패키지에는 실제 tokens.json과 사용 규칙이 별도로 존재"
+    }
+  ],
+  "flow": [],
+  "verification": {
+    "level": "source-read",
+    "checked_at": "2026-11-04",
+    "scope": "공식 2025.10 문서와 기존 갤러리 검사기의 지원 선언을 확인했습니다. 새로운 토큰을 추출하거나 외부 도구 간 호환성을 실행 검증하지 않았습니다.",
+    "evidence": []
+  },
+  "publication": {
+    "review": "approved",
+    "rights": "cleared",
+    "notes": "사용자가 요청한 디자인 북의 출처 링크와 직접 작성한 요약/평가만 포함합니다. 외부 원문, 소스 코드, 로고, 이미지와 동영상은 복제하지 않습니다. 문서 확인은 제품의 실행 검증이나 배포 승인을 의미하지 않습니다.",
+    "files": [
+      "reference.json"
+    ]
+  }
+}

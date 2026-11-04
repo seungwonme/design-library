@@ -1,0 +1,27 @@
+{
+  "schema_version": 3,
+  "record_type": "bookmark",
+  "id": "nielsen-heuristics",
+  "title": "Nielsen의 사용성 원칙",
+  "status": "saved",
+  "category": "guideline",
+  "url": "https://www.nngroup.com/articles/ten-usability-heuristics/",
+  "note": "상태 표시, 일관성, 오류 예방과 복구를 점검할 때 참고할 원칙.",
+  "tags": [
+    "UX",
+    "오류 복구",
+    "사용성"
+  ],
+  "platforms": [
+    "web"
+  ],
+  "saved_at": "2026-11-04",
+  "publication": {
+    "review": "approved",
+    "rights": "cleared",
+    "notes": "공개 사이트 URL과 직접 작성한 짧은 메모만 공유합니다. 화면 캡처는 로컬 캐시에만 보관하며 공개 파일에 포함하지 않습니다.",
+    "files": [
+      "reference.json"
+    ]
+  }
+}

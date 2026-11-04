@@ -1,0 +1,98 @@
+{
+  "schema_version": 2,
+  "record_type": "note",
+  "id": "stageshow-ui-storytelling",
+  "title": "Stageshow / 제품 UI를 설명하는 장면",
+  "status": "ready",
+  "category": "library",
+  "platforms": [
+    "web"
+  ],
+  "tags": [
+    "UI 연출",
+    "모션",
+    "에이전트 스킬",
+    "사용자 링크"
+  ],
+  "summary": "제품의 핵심 순간을 스틸, 기능 카드, 커서 데모와 짧은 모션으로 연출하는 에이전트 스킬.",
+  "sources": [
+    {
+      "id": "post",
+      "title": "@benjitaylor 원문",
+      "location": "https://x.com/benjitaylor/status/2116593247854453244",
+      "method": "Aside 브라우저에서 게시물 본문을 확인함",
+      "access": "read"
+    },
+    {
+      "id": "official",
+      "title": "Benji Taylor skills / Stageshow",
+      "location": "https://github.com/benjitaylor/skills",
+      "method": "공식 문서 본문을 읽음",
+      "access": "read"
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "observed",
+      "source_id": "official",
+      "locator": "Stageshow README",
+      "finding": "faux product UI를 만드는 React 기반 예제와 촬영/확인 도구를 소개합니다."
+    },
+    {
+      "kind": "observed",
+      "source_id": "post",
+      "locator": "작성자의 후속 설명",
+      "finding": "몇 개의 장면으로 이야기를 정하고 촬영 결과를 보며 수정하는 제작 순서를 설명합니다."
+    }
+  ],
+  "assessment": {
+    "why": "시각 스타일뿐 아니라 어떤 장면을 보여주고 어떻게 촬영해 고칠지까지 연결한 제작 절차가 참고할 부분입니다.",
+    "use_when": [
+      "제품 기능을 설명하는 카드나 데모 장면을 만들 때",
+      "한 가지 핵심 상호작용을 짧은 모션으로 전달할 때"
+    ],
+    "avoid_when": [
+      "연출한 faux UI는 실제 작동하는 제품 화면의 증거가 아닙니다.",
+      "스킬의 비교 우위는 작성자의 주장입니다. 설치하거나 동일 조건으로 비교하지 않았습니다.",
+      "포함된 키트와 각 자산의 이용 조건은 실제 사용 전에 확인합니다."
+    ],
+    "takeaways": [
+      "장면의 핵심 행동과 피드백을 먼저 정합니다.",
+      "촬영한 결과를 보고 구성과 타이밍을 다시 조정합니다."
+    ]
+  },
+  "details": [
+    {
+      "label": "형태",
+      "value": "디자인/모션 제작용 에이전트 스킬"
+    },
+    {
+      "label": "출력",
+      "value": "React로 만드는 스틸, 기능 카드, 커서 데모, bento 구성"
+    },
+    {
+      "label": "제작 요소",
+      "value": "구성/모션 지침, 시작용 키트, 예제, 촬영 도구"
+    },
+    {
+      "label": "구분",
+      "value": "실제 UX 흐름의 검증과 제품 소개를 위한 연출을 분리"
+    }
+  ],
+  "flow": [],
+  "verification": {
+    "level": "source-read",
+    "checked_at": "2026-11-04",
+    "scope": "게시물/문서의 설명을 확인했습니다. 설치, 실제 프로젝트 적용, 접근성 및 성능 검증은 수행하지 않았습니다.",
+    "evidence": []
+  },
+  "publication": {
+    "review": "approved",
+    "rights": "cleared",
+    "notes": "사용자가 요청한 디자인 북의 출처 링크와 직접 작성한 요약/평가만 포함합니다. 외부 원문, 소스 코드, 로고, 이미지와 동영상은 복제하지 않습니다. 문서 확인은 제품의 실행 검증이나 배포 승인을 의미하지 않습니다.",
+    "files": [
+      "reference.json"
+    ]
+  },
+  "url": "https://github.com/benjitaylor/skills"
+}

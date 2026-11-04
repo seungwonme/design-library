@@ -1,0 +1,97 @@
+{
+  "schema_version": 2,
+  "record_type": "note",
+  "id": "bencho-interactions",
+  "title": "Bencho / 행동에 반응하는 컴포넌트",
+  "status": "ready",
+  "category": "library",
+  "platforms": [
+    "web"
+  ],
+  "tags": [
+    "React",
+    "상호작용",
+    "모션",
+    "사용자 링크"
+  ],
+  "summary": "누르기, 끌기, 입력, 로딩처럼 사용자 행동별로 살펴보는 React 컴포넌트와 마이크로 인터랙션 모음.",
+  "sources": [
+    {
+      "id": "post",
+      "title": "@cabralorenzo 원문",
+      "location": "https://x.com/cabralorenzo/status/2117714139699089845",
+      "method": "Aside 브라우저에서 게시물 본문을 확인함",
+      "access": "read"
+    },
+    {
+      "id": "official",
+      "title": "Bencho 컴포넌트 카탈로그",
+      "location": "https://bencho.dev/",
+      "method": "공식 문서 본문을 읽음",
+      "access": "read"
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "observed",
+      "source_id": "official",
+      "locator": "카탈로그 소개와 목록",
+      "finding": "React 기반임을 밝히고 각 예제에 Press, Drag, Type 등의 행동을 표시합니다."
+    },
+    {
+      "kind": "proposed",
+      "source_id": "official",
+      "locator": "카탈로그를 제품에 적용할 때",
+      "finding": "작업 피드백을 개선하는 요소부터 검토하는 것이 적합합니다."
+    }
+  ],
+  "assessment": {
+    "why": "정지 화면만으로 판단하기 어려운 입력 반응과 작은 전환을 기능별로 탐색할 수 있습니다.",
+    "use_when": [
+      "React 화면의 특정 행동에 필요한 피드백을 비교할 때",
+      "로딩, 선택, 복사처럼 작은 상호작용의 후보를 찾을 때"
+    ],
+    "avoid_when": [
+      "화려한 효과를 모든 컨트롤에 적용하지 않습니다.",
+      "실제 코드의 의존성, 라이선스, 키보드 조작, 모션 감소 설정은 도입 전에 따로 확인합니다."
+    ],
+    "takeaways": [
+      "효과의 이름보다 무엇에 반응하는지를 먼저 봅니다.",
+      "작업의 완료와 진행 상태를 더 잘 이해시키는 효과를 선택합니다."
+    ]
+  },
+  "details": [
+    {
+      "label": "형태",
+      "value": "React 컴포넌트와 마이크로 인터랙션 라이브러리"
+    },
+    {
+      "label": "탐색 단위",
+      "value": "Press, Drag, Type, Loading, Hover 등 행동별 예제"
+    },
+    {
+      "label": "살펴볼 후보",
+      "value": "Copy field, Form error, Resizable panels, Progress tracker"
+    },
+    {
+      "label": "도입 전 확인",
+      "value": "컴포넌트별 코드/라이선스, 터치와 키보드의 대체 조작, reduced motion"
+    }
+  ],
+  "flow": [],
+  "verification": {
+    "level": "source-read",
+    "checked_at": "2026-11-04",
+    "scope": "게시물/문서의 설명을 확인했습니다. 설치, 실제 프로젝트 적용, 접근성 및 성능 검증은 수행하지 않았습니다.",
+    "evidence": []
+  },
+  "publication": {
+    "review": "approved",
+    "rights": "cleared",
+    "notes": "사용자가 요청한 디자인 북의 출처 링크와 직접 작성한 요약/평가만 포함합니다. 외부 원문, 소스 코드, 로고, 이미지와 동영상은 복제하지 않습니다. 문서 확인은 제품의 실행 검증이나 배포 승인을 의미하지 않습니다.",
+    "files": [
+      "reference.json"
+    ]
+  },
+  "url": "https://bencho.dev/"
+}

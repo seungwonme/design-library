@@ -1,0 +1,98 @@
+{
+  "schema_version": 2,
+  "record_type": "note",
+  "id": "oil-ui-design-directions",
+  "title": "Oil UI / 비교할 수 있는 디자인 방향",
+  "status": "ready",
+  "category": "library",
+  "platforms": [
+    "web"
+  ],
+  "tags": [
+    "시안 비교",
+    "설계 절차",
+    "에이전트 스킬",
+    "사용자 링크"
+  ],
+  "summary": "제품과 사용자의 맥락을 화면의 구조, 서체, 색과 이미지로 구체화하고 실제 캡처로 다듬는 설계 절차.",
+  "sources": [
+    {
+      "id": "post",
+      "title": "@dopamine_crypto 원문",
+      "location": "https://x.com/dopamine_crypto/status/2117749915602583707",
+      "method": "Aside 브라우저에서 게시물 본문을 확인함",
+      "access": "read"
+    },
+    {
+      "id": "official",
+      "title": "Oil UI README",
+      "location": "https://github.com/oil-oil/oil-ui",
+      "method": "공식 문서 본문을 읽음",
+      "access": "read"
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "observed",
+      "source_id": "official",
+      "locator": "README / How it designs",
+      "finding": "현재 기본값은 한 방향 추천이며 요청받은 비교에서 여러 방향을 탐색합니다."
+    },
+    {
+      "kind": "observed",
+      "source_id": "official",
+      "locator": "명시적 비교 원칙",
+      "finding": "색 교체만으로 차이를 만들지 않고 구조적 차이와 실제 스크린샷을 확인하도록 안내합니다."
+    }
+  ],
+  "assessment": {
+    "why": "막연한 형용사를 구체적인 시각 결정으로 바꾸고, 비교 요청 때 구조가 다른 시안을 나란히 검토하는 방법을 제공합니다.",
+    "use_when": [
+      "방향이 정해지지 않은 새 화면에서 대안을 비교할 때",
+      "색만 바뀐 시안이 반복돼 구조적 차이를 확인하고 싶을 때"
+    ],
+    "avoid_when": [
+      "현재 README의 기본 동작은 한 방향 추천이며, 여러 안은 비교 요청 때 생성합니다. 게시물 요약과 이 차이를 구분합니다.",
+      "기존 브랜드/제품 제약을 새 미학으로 덮지 않습니다. 별 수와 작성자의 성능 주장을 품질 측정으로 삼지 않습니다."
+    ],
+    "takeaways": [
+      "대안 간 차이를 배치, 타이포그래피, 색, 핵심 이미지로 설명합니다.",
+      "작업 화면은 사용자의 콘텐츠와 작업을 첫 화면에 놓습니다.",
+      "데스크톱과 모바일의 실제 렌더링으로 수정합니다."
+    ]
+  },
+  "details": [
+    {
+      "label": "형태",
+      "value": "UI 설계용 에이전트 스킬"
+    },
+    {
+      "label": "기본 경로",
+      "value": "한 방향 추천과 확인, 비교 요청 시 여러 시안을 나란히 제시"
+    },
+    {
+      "label": "설계 질문",
+      "value": "무슨 제품인지, 누가 쓰는지, 첫 화면에서 무엇을 해야 하는지"
+    },
+    {
+      "label": "미검증",
+      "value": "스킬 설치/직접 실행, 같은 프롬프트로 수행한 품질 비교"
+    }
+  ],
+  "flow": [],
+  "verification": {
+    "level": "source-read",
+    "checked_at": "2026-11-04",
+    "scope": "게시물/문서의 설명을 확인했습니다. 설치, 실제 프로젝트 적용, 접근성 및 성능 검증은 수행하지 않았습니다.",
+    "evidence": []
+  },
+  "publication": {
+    "review": "approved",
+    "rights": "cleared",
+    "notes": "사용자가 요청한 디자인 북의 출처 링크와 직접 작성한 요약/평가만 포함합니다. 외부 원문, 소스 코드, 로고, 이미지와 동영상은 복제하지 않습니다. 문서 확인은 제품의 실행 검증이나 배포 승인을 의미하지 않습니다.",
+    "files": [
+      "reference.json"
+    ]
+  },
+  "url": "https://github.com/oil-oil/oil-ui"
+}
