@@ -1,6 +1,19 @@
-# UI References
+# Design Book / UI References
 
-웹과 앱의 UI를 분석해 디자인 규칙, 토큰, 실행 가능한 프로토타입으로 보관하는 갤러리입니다. 갤러리를 만들고 관리하는 프로젝트 스킬도 이 저장소에 함께 들어 있습니다.
+UI 라이브러리, 디자인 지침, 디자인 시스템과 토큰, UI/UX 흐름을 찾아보고 재사용하기 위한 디자인 북입니다. 각 기록에는 추천 이유, 적용 조건, 피할 조건, 출처와 확인 범위를 남깁니다. 기존 UI 추출 패키지의 토큰과 실행 가능한 미리보기도 함께 보관합니다.
+
+## 네 장과 두 가지 기록
+
+| 장 | 다루는 질문 |
+|---|---|
+| UI 라이브러리 | 어떤 문제를 해결하고, 어떤 스택과 도입 조건에 맞는가? |
+| 디자인 지침 | 어떤 판단이 도움이 되며, 반례와 예외는 무엇인가? |
+| 디자인 시스템과 토큰 | 값과 의미, 테마와 상태가 어떻게 연결되는가? |
+| UI/UX 흐름 | 시작, 성공, 수정, 오류와 복귀가 어떻게 이어지는가? |
+
+읽기 기록은 `reference.json`에 평가를 쓰고 빌드가 읽기 페이지를 만듭니다. UI 추출 패키지는 기존 `DESIGN.md`, `tokens.json`, 프로토타입을 유지합니다. 문서 확인, 직접 검증, 추출 패키지는 검색 필터와 화면에서 구분합니다. 초안은 공개 빌드에서 제외됩니다.
+
+첫 읽기 기록에는 제공받은 여섯 X 게시물과 연결된 자료를 담았습니다. 라이브러리, 프롬프트 모음과 에이전트 스킬의 차이, 작성자의 주장과 직접 확인한 사실을 구분합니다. Radix, WAI-ARIA, DTCG, GOV.UK 공식 문서도 함께 기록했습니다. 각 원문과 확인일은 개별 기록에서 볼 수 있습니다.
 
 [갤러리 열기](https://seungwonme.github.io/ui-references/) / [프로젝트 스킬](.agents/skills/reference-ui-gallery/SKILL.md) / [Aside 디자인 규칙](references/aside-glass/DESIGN.md)
 
@@ -64,6 +77,14 @@ python3 -m http.server --directory ./site-preview
 검증 명령 `check`는 회귀 테스트, 전체 패키지의 공식 토큰 스키마/별칭/CSS 검사와 임시 공개 빌드를 수행합니다. 실제 시각 검수와 모델의 스킬 선택 평가는 별도입니다.
 
 ## 수정과 발행
+
+링크/문서를 수집할 때는 [디자인 북 절차](.agents/skills/reference-ui-gallery/references/design-book.md)를 따릅니다.
+
+```sh
+uv --no-config run --locked --script scripts/gallery.py note <id> --title <title> --source <url> --platform web --category guideline
+```
+
+`note`는 미확인 초안을 만들며 토큰이나 실행 증거를 생성하지 않습니다. 사용 조건과 출처를 작성한 뒤 `validate --ready`로 검사합니다. 도구와 생성 파일을 갱신할 때는 격리된 기능 worktree에서 `bundle --project-skill --apply`를 사용합니다. 공개는 기존 `publish`/`finish` 절차를 따릅니다.
 
 레퍼런스의 값은 `tokens.json`, 사용 규칙은 `DESIGN.md`, 출처와 검증 범위는 `reference.json`에서 관리합니다. 갤러리 자체의 테마는 루트 `gallery.css`에 있습니다.
 

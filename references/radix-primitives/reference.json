@@ -1,0 +1,83 @@
+{
+  "schema_version": 2,
+  "record_type": "note",
+  "id": "radix-primitives",
+  "title": "Radix Primitives / 동작을 맡기는 기반 컴포넌트",
+  "status": "ready",
+  "category": "library",
+  "platforms": [
+    "web"
+  ],
+  "tags": [
+    "React",
+    "접근성",
+    "컴포넌트",
+    "공식 문서"
+  ],
+  "summary": "스타일을 직접 정하면서 포커스, 키보드와 ARIA 동작을 기반 컴포넌트에 맡기는 React UI 라이브러리.",
+  "sources": [
+    {
+      "id": "official",
+      "title": "Radix Primitives Introduction",
+      "location": "https://www.radix-ui.com/primitives/docs/overview/introduction",
+      "method": "공식 문서 본문을 읽음",
+      "access": "read"
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "observed",
+      "source_id": "official",
+      "locator": "Key Features",
+      "finding": "unstyled 구성, focus와 keyboard 처리, 부분별 커스터마이징과 점진적 도입을 설명합니다."
+    }
+  ],
+  "assessment": {
+    "why": "브랜드의 시각 규칙과 공통 인터랙션을 분리해서 설계하는 사례입니다. 기존 화면에 필요한 컴포넌트부터 도입할 수 있습니다.",
+    "use_when": [
+      "자체 디자인 시스템의 스타일을 유지하며 공통 동작을 구현할 때",
+      "Dialog, Dropdown, Tabs 같은 복잡한 조작을 점진적으로 교체할 때"
+    ],
+    "avoid_when": [
+      "완성된 시각 디자인과 토큰을 제공하는 제품으로 기대하지 않습니다.",
+      "라이브러리의 접근성 설계가 최종 앱의 적절한 이름, 초점 순서, 콘텐츠 검증까지 대신하지는 않습니다."
+    ],
+    "takeaways": [
+      "동작과 시각 토큰의 책임을 분리합니다.",
+      "한꺼번에 교체하기보다 필요한 primitive부터 도입합니다."
+    ]
+  },
+  "details": [
+    {
+      "label": "스택",
+      "value": "React"
+    },
+    {
+      "label": "스타일",
+      "value": "unstyled, 프로젝트가 스타일을 소유"
+    },
+    {
+      "label": "동작",
+      "value": "ARIA role/attribute, focus management, keyboard navigation을 다룸"
+    },
+    {
+      "label": "확인 범위",
+      "value": "공식 소개 문서 확인. 설치/번들 크기/운영 유지보수 상태와 실제 접근성은 미검증."
+    }
+  ],
+  "flow": [],
+  "verification": {
+    "level": "source-read",
+    "checked_at": "2026-11-04",
+    "scope": "게시물/문서의 설명을 확인했습니다. 설치, 실제 프로젝트 적용, 접근성 및 성능 검증은 수행하지 않았습니다.",
+    "evidence": []
+  },
+  "publication": {
+    "review": "approved",
+    "rights": "cleared",
+    "notes": "사용자가 요청한 디자인 북의 출처 링크와 직접 작성한 요약/평가만 포함합니다. 외부 원문, 소스 코드, 로고, 이미지와 동영상은 복제하지 않습니다. 문서 확인은 제품의 실행 검증이나 배포 승인을 의미하지 않습니다.",
+    "files": [
+      "reference.json"
+    ]
+  }
+}

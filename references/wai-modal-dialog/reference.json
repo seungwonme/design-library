@@ -1,0 +1,84 @@
+{
+  "schema_version": 2,
+  "record_type": "note",
+  "id": "wai-modal-dialog",
+  "title": "WAI-ARIA / 모달의 초점과 복귀",
+  "status": "ready",
+  "category": "guideline",
+  "platforms": [
+    "web"
+  ],
+  "tags": [
+    "접근성",
+    "모달",
+    "초점",
+    "공식 문서"
+  ],
+  "summary": "모달을 열 때, 안에서 움직일 때, 닫은 뒤에 키보드 초점이 어디에 있어야 하는지 정의하는 지침.",
+  "sources": [
+    {
+      "id": "official",
+      "title": "WAI-ARIA APG / Dialog Modal Pattern",
+      "location": "https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/",
+      "method": "공식 문서 본문을 읽음",
+      "access": "read"
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "observed",
+      "source_id": "official",
+      "locator": "Keyboard Interaction / Note",
+      "finding": "진입 초점, Tab 순환, Escape 종료와 복귀 초점의 예외를 설명합니다."
+    }
+  ],
+  "assessment": {
+    "why": "모달은 시각적으로 띄우는 것만으로 완성되지 않습니다. 진입, 내부 탐색, 종료와 다음 작업의 연결을 함께 정의할 수 있습니다.",
+    "use_when": [
+      "중단 없이 집중해야 할 짧은 작업을 모달로 제공할 때",
+      "닫힌 뒤 초점이 사라지거나 키보드가 배경으로 빠지는 문제를 검토할 때"
+    ],
+    "avoid_when": [
+      "첫 번째 버튼에 무조건 초점을 보내지 않습니다. 긴 내용이나 되돌리기 어려운 행동은 더 적절한 위치를 선택합니다.",
+      "APG를 읽은 것과 실제 보조 기술로 검증한 것은 구분합니다."
+    ],
+    "takeaways": [
+      "열면 내부의 적절한 요소로 초점을 옮깁니다.",
+      "Tab과 Shift+Tab은 열린 모달 안에서 순환하게 합니다.",
+      "Escape와 보이는 닫기 동작을 제공하고 닫은 뒤 합리적인 작업 위치로 돌아갑니다."
+    ]
+  },
+  "details": [
+    {
+      "label": "배경",
+      "value": "활성 모달 바깥 콘텐츠는 상호작용하지 못하게 처리"
+    },
+    {
+      "label": "초기 초점",
+      "value": "내용의 구조와 파괴적 행동 여부를 고려"
+    },
+    {
+      "label": "종료",
+      "value": "대체로 호출한 요소로 복귀하며, 사라진 요소나 다음 작업에 따라 예외 적용"
+    },
+    {
+      "label": "검증할 것",
+      "value": "키보드 순서, 이름과 역할, 스크린리더 읽기, 스크롤과 확대"
+    }
+  ],
+  "flow": [],
+  "verification": {
+    "level": "source-read",
+    "checked_at": "2026-11-04",
+    "scope": "WAI-ARIA APG 문서를 확인했습니다. 구현체의 브라우저/스크린리더 테스트는 수행하지 않았습니다.",
+    "evidence": []
+  },
+  "publication": {
+    "review": "approved",
+    "rights": "cleared",
+    "notes": "사용자가 요청한 디자인 북의 출처 링크와 직접 작성한 요약/평가만 포함합니다. 외부 원문, 소스 코드, 로고, 이미지와 동영상은 복제하지 않습니다. 문서 확인은 제품의 실행 검증이나 배포 승인을 의미하지 않습니다.",
+    "files": [
+      "reference.json"
+    ]
+  }
+}

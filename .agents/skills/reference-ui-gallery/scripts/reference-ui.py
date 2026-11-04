@@ -276,11 +276,14 @@ def check_environment(workspace):
     tests = SKILL_ROOT / "tests"
     require((tests / "test_token_contract.py").is_file(), "check needs the bundled token regression suite; regenerate an incomplete runtime through publish.")
     full_suite = (tests / "test_reference_ui.py").is_file()
-    result = subprocess.run([sys.executable, "-B", "-m", "unittest", "discover", "-s", str(tests),
-                             "-p", "test*.py" if full_suite else "test_token_contract.py"], capture_output=True, text=True)
-    require(result.returncode == 0, "Regression tests failed:\n" + (result.stdout + result.stderr)[-3000:])
-    match = re.search(r"Ran (\d+) tests?", result.stderr)
-    require(match is not None and int(match[1]) > 0, "Regression suite ran zero tests; restore the reviewed test bundle.")
+    count = 0
+    patterns = ["test*.py"] if full_suite else ["test_token_contract.py", "test_design_book.py"]
+    for pattern in patterns:
+        result = subprocess.run([sys.executable, "-B", "-m", "unittest", "discover", "-s", str(tests), "-p", pattern], capture_output=True, text=True)
+        require(result.returncode == 0, "Regression tests failed:\n" + (result.stdout + result.stderr)[-3000:])
+        match = re.search(r"Ran (\d+) tests?", result.stderr)
+        require(match is not None and int(match[1]) > 0, "Regression suite ran zero tests; restore the reviewed test bundle.")
+        count += int(match[1])
     import gallery
     package_checks = []
     for item in catalog(workspace, include_drafts=True)["items"]:
@@ -295,12 +298,16 @@ def check_environment(workspace):
         build = gallery.build_site(workspace, Path(temporary) / "site", sys.modules[__name__])
     build.pop("output", None)
     build["temporary_output_removed"] = True
-    return {"regressions": {"status": "pass", "tests": int(match[1]), "suite": "full" if full_suite else "token-contract"},
+    return {"regressions": {"status": "pass", "tests": count, "suite": "full" if full_suite else "token-and-book"},
             "packages": package_checks, "build": build, "visual_qa": "not-run-by-this-command"}
 
 
 def validate_entry(root, ready=False, public=False):
     metadata = load_json(safe_path(root, "reference.json", exists=True))
+    if metadata.get("record_type") == "note":
+        import book
+        return book.validate(root, metadata, sys.modules[__name__], ready, public)
+    require(metadata.get("record_type", "extraction") == "extraction", "Unsupported record_type.")
     require(type(metadata.get("schema_version")) is int and metadata["schema_version"] == 1, "Unsupported reference schema_version; expected 1.")
     require(metadata.get("id") == root.name and SLUG.fullmatch(root.name), "Metadata id must match the entry folder.")
     require(nonempty(metadata.get("title")), "Entry title is missing.")
@@ -378,7 +385,12 @@ def catalog(workspace, include_drafts=False, public=False):
             continue
         metadata, _ = validate_entry(root, public=public)
         prefix = f"references/{root.name}/"
+        if metadata.get("record_type") == "note":
+            import book
+            items.append({"id": root.name, "title": metadata["title"], "status": metadata["status"], "platforms": metadata["platforms"], "tags": metadata["tags"], **book.catalog_item(metadata, prefix)})
+            continue
         items.append({"id": root.name, "title": metadata["title"], "status": metadata["status"], "platforms": metadata["platforms"], "tags": metadata["tags"], "preview": prefix + quote(metadata["preview"], safe="/"), "design": prefix + "DESIGN.md", "tokens": prefix + "tokens.json", "metadata": prefix + "reference.json", "thumbnail": prefix + quote(metadata["thumbnail"], safe="/") if metadata.get("thumbnail") else ""})
+        items[-1].update(record_type="extraction", category="design-system", summary="디자인 규칙, 토큰과 새 화면의 재사용 검증을 함께 보관한 추출 패키지.", verification="extraction", checked_at="", source="")
     return {"schema_version": 1, "items": items}
 
 
@@ -401,6 +413,16 @@ def parser():
     create.add_argument("--title", required=True)
     create.add_argument("--source", required=True)
     create.add_argument("--platform", required=True, choices=("web", "mobile", "desktop"))
+    note = commands.add_parser("note", help="Create a draft design-book record without fabricated tokens or runtime claims")
+    note.add_argument("slug")
+    note.add_argument("--title", required=True)
+    note.add_argument("--source", required=True)
+    note.add_argument("--platform", required=True, choices=("web", "mobile", "desktop"))
+    note.add_argument("--category", required=True, choices=("library", "guideline", "design-system", "flow"))
+    bundle = commands.add_parser("bundle", help="Plan or refresh generated runtime files in the selected worktree; no push or deployment")
+    bundle.add_argument("--project-skill", action="store_true")
+    bundle.add_argument("--default-branch", default="main")
+    bundle.add_argument("--apply", action="store_true")
     validate = commands.add_parser("validate", help="Check package records, pinned token schema and alias semantics; not visual correctness")
     validate.add_argument("slug")
     validate.add_argument("--ready", action="store_true", help="Require completed verification records and a preview")
@@ -451,6 +473,9 @@ def main(argv=None):
             require(info["bootstrap_comparison"] != "mismatch-or-unresolved", "Bootstrap URL and Git remotes differ or cannot be resolved; inspect doctor and Git settings before continuing.")
             if args.command == "new":
                 output = new_entry(args, workspace)
+            elif args.command == "note":
+                import book
+                output = book.new_note(args, workspace, sys.modules[__name__])
             elif args.command == "check":
                 output = check_environment(workspace)
             elif args.command == "validate":
@@ -461,6 +486,13 @@ def main(argv=None):
                 import gallery
                 if args.command == "build":
                     output = gallery.build_site(workspace, args.output, sys.modules[__name__], args.drafts)
+                elif args.command == "bundle":
+                    output = {"workspace": str(workspace), "applied": False, "default_branch": args.default_branch, "project_skill": args.project_skill or (workspace / gallery.PROJECT_SKILL_ROOT).exists()}
+                    if args.apply:
+                        branch = git(workspace, "branch", "--show-current")
+                        require(branch and branch[0] != args.default_branch, "Refresh the bundle in an isolated feature worktree, not a detached HEAD or default branch.")
+                        managed, removed = gallery.install_bundle(workspace, args.default_branch, sys.modules[__name__], args.project_skill)
+                        output.update(applied=True, managed=managed, removed=removed)
                 elif args.command == "publish":
                     require(args.timeout > 0, "--timeout must be positive.")
                     output = gallery.publish(args, workspace, data, sys.modules[__name__])

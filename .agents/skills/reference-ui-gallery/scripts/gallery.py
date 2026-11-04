@@ -16,7 +16,7 @@ import time
 from urllib.parse import unquote, urljoin, urlsplit
 from urllib.request import Request, urlopen
 
-VERSION = "0.6.0"
+VERSION = "0.7.0"
 WORKFLOW = "UI reference pages"
 PROJECT_SKILL_NAME = "reference-ui-gallery"
 PROJECT_SKILL_ROOT = ".agents/skills/" + PROJECT_SKILL_NAME
@@ -25,13 +25,16 @@ RUNTIME_FILES = (
     "assets/dtcg-format.schema.json", "assets/dtcg-license.md", "assets/config.example.json",
     "assets/reference-template.json", "assets/tokens-template.json", "assets/design-template.md",
     "assets/gallery.html", "assets/gallery.css", "assets/gallery.js", "assets/pages.yml",
-    "tests/test_token_contract.py",
+    "tests/test_token_contract.py", "tests/test_design_book.py",
+    "scripts/book.py", "assets/book-template.json", "assets/book-note.html",
+    "assets/book.css", "assets/book.js", "pyproject.toml", "uv.lock",
 )
 SKILL_FILES = RUNTIME_FILES + (
-    "SKILL.md", "README.md", "references/setup.md", "references/extraction.md",
+    "SKILL.md", "README.md", "references/SETUP.md", "references/extraction.md",
     "references/package-contract.md", "references/gallery-and-reuse.md",
     "references/rea-extraction.md", "references/taste-and-prototype.md",
     "tests/test_reference_ui.py", "tests/token-contract-report.md", "tests/eval-cases.json", "tests/eval-report.md",
+    "references/design-book.md",
 )
 
 
@@ -107,11 +110,16 @@ def public_files(root, metadata, api):
     files = metadata["publication"].get("files")
     api.require(isinstance(files, list) and files and all(api.nonempty(x) for x in files), "publication.files must explicitly list the files approved for export.")
     api.require(len(files) == len(set(files)), "publication.files contains duplicates.")
-    required = {"DESIGN.md", "tokens.json", "reference.json", metadata["preview"]}
+    note = metadata.get("record_type") == "note"
+    required = {"reference.json"} if note else {"DESIGN.md", "tokens.json", "reference.json", metadata["preview"]}
     if metadata.get("thumbnail"):
         required.add(metadata["thumbnail"])
-    for check in metadata["verification"].values():
-        required.update(check["evidence"])
+    if note:
+        required.update(metadata["verification"]["evidence"])
+        api.require("index.html" not in files, "Book index.html is generated from reference.json; do not export a second source.")
+    else:
+        for check in metadata["verification"].values():
+            required.update(check["evidence"])
     api.require(required <= set(files), "publication.files omits a document, preview, thumbnail, or verification evidence file.")
     for relative in files:
         path = api.safe_path(root, relative, exists=True)
@@ -235,7 +243,10 @@ def build_site(workspace, output, api, drafts=False):
             target = destination / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(root / relative, target)
-        css_output = metadata["prototype"].get("token_css")
+        if metadata.get("record_type") == "note":
+            import book
+            (destination / "index.html").write_text(book.render(metadata, api, (workspace / "gallery.css").exists(), drafts), encoding="utf-8")
+        css_output = metadata.get("prototype", {}).get("token_css")
         if css_output:
             api.require(css_output not in files, "Generated token CSS must not be a separately maintained input file.")
             target = api.safe_path(destination, css_output)
@@ -243,7 +254,7 @@ def build_site(workspace, output, api, drafts=False):
             target.write_text(token_css(api.load_json(root / "tokens.json"), api), encoding="utf-8")
     assets = output / "assets"
     assets.mkdir()
-    for name in ("gallery.css", "gallery.js"):
+    for name in ("gallery.css", "gallery.js", "book.css", "book.js"):
         shutil.copyfile(api.ASSETS / name, assets / name)
     data = api.dump_json(listing).replace("<", "\\u003c")
     style = managed_path(workspace, "gallery.css", api)
@@ -254,7 +265,9 @@ def build_site(workspace, output, api, drafts=False):
     document = (api.ASSETS / "gallery.html").read_text(encoding="utf-8")
     document = document.replace("<!-- GALLERY_STYLE -->", custom)
     document = document.replace("<!-- DRAFT_NOTICE -->", '<p class="draft-notice" role="status">DRAFT / 검증 전 로컬 미리보기</p>' if drafts else "")
-    (output / "index.html").write_text(document.replace("CATALOG_DATA", data), encoding="utf-8")
+    fallback = '<ul>' + ''.join('<li><a href="' + html.escape(item["preview"], quote=True) + '">' + html.escape(item["title"]) + '</a></li>' for item in listing["items"]) + '</ul>'
+    document = document.replace("<!-- STATIC_LINKS -->", fallback)
+    (output / "index.html").write_text(document.replace('{"items":[],"template":"CATALOG_DATA"}', data), encoding="utf-8")
     (output / "catalog.json").write_text(api.dump_json(listing), encoding="utf-8")
     (output / ".nojekyll").write_text("", encoding="utf-8")
     check_links(output, api)
@@ -280,8 +293,21 @@ def project_skill_file(relative, api):
     return content.encode("utf-8")
 
 
+def bundle_file_path(worktree, name, api):
+    api.require(isinstance(name, str) and name and not any(c in name for c in "\\:") and not any(ord(c) < 32 for c in name), "Bundle paths must be non-empty forward-slash relative file paths.")
+    api.require(all(part and part not in (".", "..") and part.casefold() != ".git" for part in name.split("/")), "Bundle paths must be canonical checkout paths outside .git.")
+    target = managed_path(worktree, name, api)
+    for parent in target.parents:
+        if parent == worktree:
+            break
+        api.require(not parent.exists() or parent.is_dir(), f"Bundle parent is not a directory: {name}")
+    api.require(not target.exists() or target.is_file(), f"Bundle target is not a regular file: {name}")
+    return target
+
+
 def install_bundle(worktree, default_branch, api, project_skill=False):
     api.require(re.fullmatch(r"[A-Za-z0-9._/-]+", default_branch), "Default branch name cannot be embedded safely in the workflow template.")
+    api.require(worktree.is_dir() and not worktree.is_symlink(), "Bundle checkout must be a real directory.")
     generated = {}
     for relative in RUNTIME_FILES:
         generated[".reference-ui/" + relative] = (api.SKILL_ROOT / relative).read_bytes()
@@ -309,18 +335,40 @@ runpy.run_path(str(runner), run_name="__main__")
     generated["scripts/gallery.py"] = wrapper.encode()
     generated["scripts/gallery.py.lock"] = (api.SKILL_ROOT / "scripts/reference-ui.py.lock").read_bytes()
     generated[".github/workflows/pages.yml"] = (api.ASSETS / "pages.yml").read_text().replace("DEFAULT_BRANCH", default_branch).encode()
-    manifest_path = managed_path(worktree, ".reference-ui/bundle.json", api)
+    manifest_path = bundle_file_path(worktree, ".reference-ui/bundle.json", api)
     previous = api.load_json(manifest_path).get("files", {}) if manifest_path.exists() else {}
+    api.require(isinstance(previous, dict), "Bundle manifest files must map paths to SHA-256 hashes.")
+    removed = {}
+    for name, digest in previous.items():
+        target = bundle_file_path(worktree, name, api)
+        api.require(name.casefold() != ".reference-ui/bundle.json", "Bundle manifest cannot manage itself.")
+        api.require(isinstance(digest, str) and re.fullmatch(r"[0-9a-f]{64}", digest), f"Invalid managed-file hash: {name}")
+        if target.exists():
+            api.require(hashlib.sha256(target.read_bytes()).hexdigest() == digest, f"Managed file was edited outside the generator: {name}; review it before updating.")
+        if name not in generated:
+            removed[name] = target
     for name, data in generated.items():
-        target = managed_path(worktree, name, api)
-        if target.exists() and target.read_bytes() != data:
-            api.require(name in previous and hashlib.sha256(target.read_bytes()).hexdigest() == previous[name], f"Managed file was edited outside the generator: {name}; review it before updating.")
+        target = bundle_file_path(worktree, name, api)
+        if target.exists() and name not in previous and target.read_bytes() != data:
+            renamed = any(name.casefold() == old.casefold() and old_target.exists() and target.samefile(old_target) for old, old_target in removed.items())
+            api.require(renamed, f"Managed file was edited outside the generator: {name}; review it before updating.")
+    # Unlink the old identity first so case-only renames also work on case-insensitive filesystems.
+    for target in removed.values():
+        target.unlink(missing_ok=True)
     for name, data in generated.items():
         target = worktree / name
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(data)
     manifest_path.write_text(api.dump_json({"version": VERSION, "project_skill": PROJECT_SKILL_NAME if project_skill else None, "files": {name: hashlib.sha256(data).hexdigest() for name, data in generated.items()}}), encoding="utf-8")
-    return list(generated) + [".reference-ui/bundle.json"]
+    return list(generated) + [".reference-ui/bundle.json"], list(removed)
+
+
+def stage_bundle(worktree, managed, removed):
+    # A case-insensitive index can retain the old spelling after filesystem rename.
+    # Remove only manifest-validated retired identities before adding the new ones.
+    if removed:
+        command(["git", "update-index", "--force-remove", "--", *removed], cwd=worktree)
+    command(["git", "add", "--", *managed], cwd=worktree)
 
 
 def wait_workflow(repo, commit, event, timeout):
@@ -456,14 +504,14 @@ def publish(args, workspace, data, api):
             destination = api.safe_path(target, relative)
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source / relative, destination)
-        managed = install_bundle(worktree, default_branch, api, project_skill=args.project_skill)
+        managed, removed = install_bundle(worktree, default_branch, api, project_skill=args.project_skill)
         if style is not None:
             managed_path(worktree, "gallery.css", api).write_text(style, encoding="utf-8")
             managed.append("gallery.css")
         built = build_site(worktree, run / "site", api)
         api.require(metadata["id"] in built["entries"], "Local build omitted the requested entry.")
         progress("local-build", f"{metadata['id']}: {built['files']} files")
-        command(["git", "add", "--", *managed, "references/" + metadata["id"]], cwd=worktree)
+        stage_bundle(worktree, [*managed, "references/" + metadata["id"]], removed)
         command(["git", "diff", "--cached", "--check"], cwd=worktree)
         changed = command(["git", "diff", "--cached", "--quiet"], cwd=worktree, check=False).returncode
         api.require(changed == 1, "No changed reference/runtime files to publish.")
@@ -471,7 +519,7 @@ def publish(args, workspace, data, api):
         head = api.git(worktree, "rev-parse", "HEAD")[0]
         command(["git", "push", "-u", remote, branch], cwd=worktree)
         body = run / "pr-body.md"
-        body.write_text(f"## Summary\n\nPublish `{metadata['id']}` with its prototype, design rules, tokens and reviewed assets.\n\n## Validation\n\nPackage/public-record validation and local static build passed ({built['files']} files). CI repeats validation and builds the Pages artifact. Visual verification scope is recorded in the entry metadata.\n\n## Review\n\nReview source fidelity, recorded limitations and the explicit public file list. Deployment occurs after merge.\n", encoding="utf-8")
+        body.write_text(f"## Summary\n\nPublish `{metadata['id']}` with source records, application guidance and explicitly reviewed files.\n\n## Validation\n\nPackage/public-record validation and local static build passed ({built['files']} files). CI repeats validation and builds the Pages artifact. Verification scope is recorded in the entry metadata.\n\n## Review\n\nReview source fidelity, recorded limitations and the explicit public file list. Deployment occurs after merge.\n", encoding="utf-8")
         url = command(["gh", "pr", "create", "--repo", repo, "--base", default_branch, "--head", branch, "--title", f"feat(references): publish {metadata['id']}", "--body-file", str(body)], cwd=worktree).stdout.strip()
         number = int(url.rstrip("/").split("/")[-1])
         progress("pull-request", url)

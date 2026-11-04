@@ -1,0 +1,18 @@
+{
+  "schema_version": 2,
+  "record_type": "note",
+  "id": "",
+  "title": "",
+  "status": "draft",
+  "category": "guideline",
+  "platforms": [],
+  "tags": [],
+  "summary": "",
+  "sources": [{"id": "source-1", "location": "", "method": "", "access": "unread"}],
+  "evidence": [],
+  "assessment": {"why": "", "use_when": [], "avoid_when": [], "takeaways": []},
+  "details": [],
+  "flow": [],
+  "verification": {"level": "unread", "checked_at": "", "scope": "", "evidence": []},
+  "publication": {"review": "pending", "rights": "unreviewed", "notes": "", "files": ["reference.json"]}
+}

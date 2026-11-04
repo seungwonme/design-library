@@ -1,0 +1,151 @@
+{
+  "schema_version": 2,
+  "record_type": "note",
+  "id": "viktor-reference-map",
+  "title": "Viktor Oddy / 용도별 레퍼런스 지도",
+  "status": "ready",
+  "category": "guideline",
+  "platforms": [
+    "web",
+    "mobile"
+  ],
+  "tags": [
+    "레퍼런스 탐색",
+    "서체",
+    "모션",
+    "사용자 링크"
+  ],
+  "summary": "한 게시물에 모인 생성 도구, 랜딩 페이지 갤러리, 서체와 모바일 모션 자료를 용도별로 정리한 출발점.",
+  "sources": [
+    {
+      "id": "post",
+      "title": "@viktoroddy 원문",
+      "location": "https://x.com/viktoroddy/status/2117585451502719144",
+      "method": "Aside 브라우저에서 게시물 본문을 확인함",
+      "access": "read"
+    },
+    {
+      "id": "link-0",
+      "title": "MotionSites Studio",
+      "location": "https://studio.motionsites.ai",
+      "method": "게시물에서 연결 대상을 확인했으며 개별 서비스의 실행과 조건은 미검증",
+      "access": "unread"
+    },
+    {
+      "id": "link-1",
+      "title": "MotionSites",
+      "location": "https://motionsites.ai",
+      "method": "게시물에서 연결 대상을 확인했으며 개별 서비스의 실행과 조건은 미검증",
+      "access": "unread"
+    },
+    {
+      "id": "link-2",
+      "title": "Land-book",
+      "location": "https://land-book.com",
+      "method": "게시물에서 연결 대상을 확인했으며 개별 서비스의 실행과 조건은 미검증",
+      "access": "unread"
+    },
+    {
+      "id": "link-3",
+      "title": "Recent Design",
+      "location": "https://recent.design",
+      "method": "게시물에서 연결 대상을 확인했으며 개별 서비스의 실행과 조건은 미검증",
+      "access": "unread"
+    },
+    {
+      "id": "link-4",
+      "title": "Landdding",
+      "location": "https://landdding.com",
+      "method": "게시물에서 연결 대상을 확인했으며 개별 서비스의 실행과 조건은 미검증",
+      "access": "unread"
+    },
+    {
+      "id": "link-5",
+      "title": "Font in Logo",
+      "location": "https://fontinlogo.com",
+      "method": "게시물에서 연결 대상을 확인했으며 개별 서비스의 실행과 조건은 미검증",
+      "access": "unread"
+    },
+    {
+      "id": "link-6",
+      "title": "Godly",
+      "location": "https://godly.website",
+      "method": "게시물에서 연결 대상을 확인했으며 개별 서비스의 실행과 조건은 미검증",
+      "access": "unread"
+    },
+    {
+      "id": "link-7",
+      "title": "60fps",
+      "location": "https://60fps.design",
+      "method": "게시물에서 연결 대상을 확인했으며 개별 서비스의 실행과 조건은 미검증",
+      "access": "unread"
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "observed",
+      "source_id": "post",
+      "locator": "8개 리소스 목록",
+      "finding": "생성 도구, 웹 갤러리, 로고 서체, 모바일 UI 애니메이션 자료를 함께 소개합니다."
+    },
+    {
+      "kind": "proposed",
+      "source_id": "post",
+      "locator": "분류 방식",
+      "finding": "사용 목적에 따라 묶어 검색의 출발점으로 사용합니다."
+    }
+  ],
+  "assessment": {
+    "why": "레퍼런스를 하나의 순위로 묶기보다 지금 해결할 질문에 맞춰 찾는 데 활용할 수 있습니다.",
+    "use_when": [
+      "웹 페이지의 구성과 타이포그래피 사례를 폭넓게 찾을 때",
+      "정지 화면으로 설명하기 어려운 모바일 모션 자료를 찾을 때"
+    ],
+    "avoid_when": [
+      "연결 서비스 8개의 기능과 요금, 품질을 전부 검증한 추천 목록은 아닙니다.",
+      "원본 게시물의 저렴하다는 비교나 자료 개수는 확인된 사실로 옮기지 않습니다.",
+      "참고 화면의 문구/이미지/브랜드를 그대로 재배포하지 않습니다."
+    ],
+    "takeaways": [
+      "구성, 서체, 모션처럼 찾는 대상의 역할을 분리합니다.",
+      "최종 채택 전에 해당 서비스의 원문과 실제 사례를 개별 검토합니다."
+    ]
+  },
+  "details": [
+    {
+      "label": "생성/프롬프트",
+      "value": "MotionSites Studio, MotionSites"
+    },
+    {
+      "label": "웹 레퍼런스",
+      "value": "Land-book, Recent Design, Landdding, Godly"
+    },
+    {
+      "label": "서체",
+      "value": "Font in Logo"
+    },
+    {
+      "label": "모바일 모션",
+      "value": "60fps"
+    },
+    {
+      "label": "확인 범위",
+      "value": "게시물 본문과 연결 대상만 확인. 각 서비스에 대한 평가는 후속 기록 대상."
+    }
+  ],
+  "flow": [],
+  "verification": {
+    "level": "source-read",
+    "checked_at": "2026-11-04",
+    "scope": "게시물/문서의 설명을 확인했습니다. 설치, 실제 프로젝트 적용, 접근성 및 성능 검증은 수행하지 않았습니다.",
+    "evidence": []
+  },
+  "publication": {
+    "review": "approved",
+    "rights": "cleared",
+    "notes": "사용자가 요청한 디자인 북의 출처 링크와 직접 작성한 요약/평가만 포함합니다. 외부 원문, 소스 코드, 로고, 이미지와 동영상은 복제하지 않습니다. 문서 확인은 제품의 실행 검증이나 배포 승인을 의미하지 않습니다.",
+    "files": [
+      "reference.json"
+    ]
+  }
+}

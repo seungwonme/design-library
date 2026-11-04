@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark"><meta name="darkreader-lock">
+<title>{{TITLE}} | Design Book</title><link rel="icon" href="data:,">
+<link rel="stylesheet" href="../../assets/gallery.css">{{CUSTOM_STYLE}}
+<link rel="stylesheet" href="../../assets/book.css">
+</head>
+<body class="book-detail">
+<a class="skip-link" href="#reading">본문으로 이동</a>
+<header class="reading-top"><a href="../../">Design Book</a><button id="reading-theme" type="button">테마 전환</button></header>
+<main id="reading" class="reading" tabindex="-1">
+{{DRAFT}}
+<nav aria-label="현재 위치"><a href="../../">전체 기록</a><span aria-hidden="true"> / </span><span>{{CATEGORY}}</span></nav>
+<h1>{{TITLE}}</h1><p class="reading-summary">{{SUMMARY}}</p>
+<aside class="verification-note"><strong>{{LEVEL}}</strong><span>확인일 {{CHECKED}}</span><p>{{SCOPE}}</p></aside>
+{{CONTENT}}
+<footer><a href="../../">목록으로 돌아가기</a><a href="reference.json">기록 데이터</a></footer>
+</main><script src="../../assets/book.js"></script>
+</body></html>

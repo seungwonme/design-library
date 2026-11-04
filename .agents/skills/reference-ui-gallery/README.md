@@ -1,10 +1,12 @@
 # reference-ui-gallery
 
-원본 UI를 디자인 규칙과 토큰, 실행 가능한 프로토타입으로 정리해 외부 갤러리 저장소에 보관하는 공용 workflow 스킬이다. 추출 근거, 디자인 시스템 정본, 패키지 안의 새 화면 재사용 검증과 갤러리 홈페이지/테마/발행을 맡는다. 준비된 디자인을 별도 제품에 적용하기만 하는 구현은 해당 제품의 개발 워크플로가 맡는다.
+UI 라이브러리, 디자인 지침, 디자인 시스템과 토큰, UI/UX 흐름을 기록하는 디자인 북 스킬이다. 링크와 공식 문서를 평가한 읽기 기록, 실제 UI에서 추출한 디자인 규칙/토큰/프로토타입을 같은 갤러리에 보관한다. 준비된 디자인을 별도 제품에 적용하기만 하는 구현은 해당 제품의 개발 워크플로가 맡는다.
 
 사용자 진입점은 [SKILL.md](SKILL.md)다. 도구는 Python, uv로 고정한 jsonschema 환경, Git, GitHub CLI를 사용한다. 설정/조회/검증/빌드는 로컬에서 실행한다. 저장소 생성과 발행은 먼저 계획을 반환하고 `--apply`에서만 외부 변경을 실행한다. 사용자 설정은 설치 폴더 밖에 두고, 배포 템플릿의 사용자 값은 비워 둔다.
 
 ## REA, Taste, prototype 연결
+
+[디자인 북 절차](references/design-book.md)는 출처 확인, 추천 이유, 적용 조건, 반례와 검증 수준을 정의한다. [빈 기록 템플릿](assets/book-template.json)에서 시작하며 읽기 페이지는 자동 생성된다. 실제 수집한 링크와 평가는 갤러리 저장소에만 둔다.
 
 | 역할 | 연결된 절차 |
 |---|---|
@@ -38,6 +40,8 @@ CI의 저장소 래퍼는 프로젝트 스킬이 있으면 그 실행 코드를 
 
 `publish --project-skill`은 이 스킬 전체를 프로젝트의 `.agents/skills/reference-ui-gallery/`에 함께 배포한다. 전역 `reference-ui`와 구분되는 프로젝트 호출명이며, 별도 기능을 가진 새 스킬은 아니다. 실행용 `.reference-ui/`와 프로젝트 묶음은 같은 원본에서 생성하고 하나의 manifest로 검증한다. 한 번 포함한 저장소는 이후 발행에서도 전체 묶음을 갱신한다.
 
+기존 기능 worktree에서 갤러리를 수정할 때는 `bundle --project-skill --apply`로 묶음을 갱신한다. 기본 호출은 계획만 출력하며 이 명령은 원격으로 보내거나 배포하지 않는다.
+
 갤러리의 테마는 저장소가 소유하는 `gallery.css`에서 관리한다. 스킬에는 공통 화면과 중립적인 기본값만 두며, 선택한 레퍼런스의 토큰/폰트/배경 연결은 갤러리 저장소에 남는다. [재사용과 갤러리](references/gallery-and-reuse.md)에 연결 방법을 설명한다.
 
 ## 유지보수와 검증
@@ -45,6 +49,8 @@ CI의 저장소 래퍼는 프로젝트 스킬이 있으면 그 실행 코드를 
 [행동 테스트](tests/test_reference_ui.py)와 [토큰 회귀 테스트](tests/test_token_contract.py)는 설정 격리, 기존 데이터 보존, 토큰 타입/상속/별칭과 CSS 변환을 확인한다. [반복 검증 환경](references/package-contract.md#반복-검증-환경)의 `check`가 이 테스트와 실제 패키지/임시 빌드를 함께 실행한다. [경량 평가](tests/eval-cases.json)는 모델의 명확한 호출, 다른 표현, near-miss와 on/off 비교에 사용한다. 자동 회귀 테스트와 모델 평가는 별개다.
 
 초기 후보의 관찰 결과와 한계는 [경량 평가 기록](tests/eval-report.md)에 있다.
+
+[디자인 북 회귀 검사](tests/test_design_book.py)는 초안 보존, 출처/실행 검증 구분, HTML escaping, 공개 파일 목록과 흐름의 복귀 경로를 검사한다. 편집 훅의 테스트 환경은 [pyproject.toml](pyproject.toml)과 [uv.lock](uv.lock)으로 고정하며 `uv sync --frozen`으로 준비한다. CLI는 기존 PEP 723 잠금 파일을 사용한다. 두 환경은 같은 jsonschema 버전을 선언한다.
 
 0.6.0의 결정론적 검사 범위와 결과는 [토큰 계약 검증](tests/token-contract-report.md)에 있다. 검사에는 [고정한 스키마](assets/dtcg-format.schema.json), [값/별칭 검사 구현](scripts/token-validation.py), [Python 잠금 파일](scripts/reference-ui.py.lock)을 사용한다.
 
