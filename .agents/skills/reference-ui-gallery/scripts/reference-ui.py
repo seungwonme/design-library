@@ -304,6 +304,9 @@ def check_environment(workspace):
 
 def validate_entry(root, ready=False, public=False):
     metadata = load_json(safe_path(root, "reference.json", exists=True))
+    if metadata.get("record_type") == "bookmark":
+        import collection
+        return collection.validate(root, metadata, sys.modules[__name__], public)
     if metadata.get("record_type") == "note":
         import book
         return book.validate(root, metadata, sys.modules[__name__], ready, public)
@@ -376,8 +379,8 @@ def catalog(workspace, include_drafts=False, public=False):
             continue
         root = entry_root(workspace, root.name)
         metadata = load_json(safe_path(root, "reference.json", exists=True))
-        require(choice(metadata.get("status"), {"draft", "ready"}), f"Invalid entry status: {root.name}")
-        if metadata["status"] != "ready" and not include_drafts:
+        require(choice(metadata.get("status"), {"draft", "ready", "saved"}), f"Invalid entry status: {root.name}")
+        if metadata["status"] == "draft" and not include_drafts:
             continue
         publication = metadata.get("publication", {})
         require(isinstance(publication, dict), f"Invalid publication object: {root.name}")
@@ -385,6 +388,10 @@ def catalog(workspace, include_drafts=False, public=False):
             continue
         metadata, _ = validate_entry(root, public=public)
         prefix = f"references/{root.name}/"
+        if metadata.get("record_type") == "bookmark":
+            import collection
+            items.append({"id": root.name, "title": metadata["title"], "status": metadata["status"], "platforms": metadata["platforms"], "tags": metadata["tags"], **collection.catalog_item(metadata, prefix)})
+            continue
         if metadata.get("record_type") == "note":
             import book
             items.append({"id": root.name, "title": metadata["title"], "status": metadata["status"], "platforms": metadata["platforms"], "tags": metadata["tags"], **book.catalog_item(metadata, prefix)})
@@ -418,7 +425,18 @@ def parser():
     note.add_argument("--title", required=True)
     note.add_argument("--source", required=True)
     note.add_argument("--platform", required=True, choices=("web", "mobile", "desktop"))
-    note.add_argument("--category", required=True, choices=("library", "guideline", "design-system", "flow"))
+    note.add_argument("--category", required=True, choices=("reference", "library", "asset", "guideline", "design-system", "inbox", "flow"))
+    collect = commands.add_parser("collect", help="Save a link and optional note/image; defaults to inbox, without assessment or publication")
+    collect.add_argument("slug")
+    collect.add_argument("--source")
+    collect.add_argument("--title")
+    collect.add_argument("--category", default="inbox", choices=("reference", "library", "asset", "design-system", "guideline", "inbox"))
+    collect.add_argument("--note", default="")
+    collect.add_argument("--tag", action="append", default=[])
+    collect.add_argument("--platform", default="web", choices=("web", "mobile", "desktop"))
+    collect.add_argument("--image", help="Local image to cache for private previews only; never uploaded by publish")
+    view = commands.add_parser("view", help="Build the local collection and serve it on loopback; Ctrl-C stops the viewer")
+    view.add_argument("--port", type=int, default=0)
     bundle = commands.add_parser("bundle", help="Plan or refresh generated runtime files in the selected worktree; no push or deployment")
     bundle.add_argument("--project-skill", action="store_true")
     bundle.add_argument("--default-branch", default="main")
@@ -476,6 +494,23 @@ def main(argv=None):
             elif args.command == "note":
                 import book
                 output = book.new_note(args, workspace, sys.modules[__name__])
+            elif args.command == "collect":
+                import collection
+                output = collection.collect(args, workspace, sys.modules[__name__])
+            elif args.command == "view":
+                import gallery
+                from functools import partial
+                from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+                require(0 <= args.port <= 65535, "--port must be between 0 and 65535.")
+                directory = Path(tempfile.mkdtemp(prefix="reference-ui-view-")) / "site"
+                built = gallery.build_site(workspace, directory, sys.modules[__name__], drafts=True)
+                with ThreadingHTTPServer(("127.0.0.1", args.port), partial(SimpleHTTPRequestHandler, directory=str(directory))) as server:
+                    print(dump_json({"url": f"http://127.0.0.1:{server.server_port}/", "records": str(workspace / "references"), "output": built["output"]}), flush=True)
+                    try:
+                        server.serve_forever()
+                    except KeyboardInterrupt:
+                        pass
+                return 0
             elif args.command == "check":
                 output = check_environment(workspace)
             elif args.command == "validate":

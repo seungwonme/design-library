@@ -1,19 +1,23 @@
-# Design Book / UI References
+# Design Library / UI References
 
-UI 라이브러리, 디자인 지침, 디자인 시스템과 토큰, UI/UX 흐름을 찾아보고 재사용하기 위한 디자인 북입니다. 각 기록에는 추천 이유, 적용 조건, 피할 조건, 출처와 확인 범위를 남깁니다. 기존 UI 추출 패키지의 토큰과 실행 가능한 미리보기도 함께 보관합니다.
+디자인 자료를 모으고, 미리보기와 검색으로 다시 꺼내 보는 개인 라이브러리입니다. 링크나 이미지를 저장하고 분류, 태그, 한 줄 메모를 붙입니다. 메모와 분류는 나중에 해도 됩니다.
 
-## 네 장과 두 가지 기록
+## 다섯 분류와 수집함
 
-| 장 | 다루는 질문 |
+| 분류 | 모아둘 자료 |
 |---|---|
-| UI 라이브러리 | 어떤 문제를 해결하고, 어떤 스택과 도입 조건에 맞는가? |
-| 디자인 지침 | 어떤 판단이 도움이 되며, 반례와 예외는 무엇인가? |
-| 디자인 시스템과 토큰 | 값과 의미, 테마와 상태가 어떻게 연결되는가? |
-| UI/UX 흐름 | 시작, 성공, 수정, 오류와 복귀가 어떻게 이어지는가? |
+| 디자인 레퍼런스 | 사이트, 앱 화면, 레이아웃, 사용자 흐름과 모션 |
+| UI 컴포넌트/라이브러리 | 화면 구현에 가져다 쓸 컴포넌트와 도구 |
+| 아이콘/에셋 | 아이콘, 폰트, 일러스트 등의 소재 |
+| 디자인 시스템 | 색상, 서체, 간격, 토큰과 사용 지침 |
+| UX 규칙 | 탐색, 입력, 피드백, 오류 복구, 접근성과 문구 원칙 |
+| 수집함 | 아직 분류하지 않은 링크나 이미지 |
 
-읽기 기록은 `reference.json`에 평가를 쓰고 빌드가 읽기 페이지를 만듭니다. UI 추출 패키지는 기존 `DESIGN.md`, `tokens.json`, 프로토타입을 유지합니다. 문서 확인, 직접 검증, 추출 패키지는 검색 필터와 화면에서 구분합니다. 초안은 공개 빌드에서 제외됩니다.
+기록 원본은 `references/<id>/reference.json`입니다. 제목, 원본 URL, 분류, 태그와 짧은 메모를 저장합니다. 이미지 미리보기는 `.reference-previews/`에 따로 보관하며 Git 원격과 공개 빌드에는 포함하지 않습니다. 이미지 파일은 로컬 백업에 포함해야 합니다. 기존 상세 설명과 UI 추출 패키지의 `DESIGN.md`, `tokens.json`, 프로토타입은 유지합니다.
 
 첫 읽기 기록에는 제공받은 여섯 X 게시물과 연결된 자료를 담았습니다. 라이브러리, 프롬프트 모음과 에이전트 스킬의 차이, 작성자의 주장과 직접 확인한 사실을 구분합니다. Radix, WAI-ARIA, DTCG, GOV.UK 공식 문서도 함께 기록했습니다. 각 원문과 확인일은 개별 기록에서 볼 수 있습니다.
+
+Lucide, Phosphor, Land-book, Mobbin, Laws of UX, Nielsen의 사용성 원칙도 가벼운 저장 형식으로 담았습니다. 수집함에는 원 게시물에서 발견한 Font in Logo를 보관했습니다. 상세 분석이나 실행 검증은 저장의 필수 조건이 아닙니다.
 
 [갤러리 열기](https://seungwonme.github.io/ui-references/) / [프로젝트 스킬](.agents/skills/reference-ui-gallery/SKILL.md) / [Aside 디자인 규칙](references/aside-glass/DESIGN.md)
 
@@ -43,11 +47,13 @@ Taste 기본 v2의 웹 아트 디렉션과 앱/대시보드 개선을 구분합�
 └── tests/         # 행동 검사와 평가 기록
 
 references/<id>/
-├── index.html
-├── DESIGN.md
-├── tokens.json
-├── reference.json
-└── assets/        # 해당 레퍼런스가 사용하는 공개 자산
+├── reference.json # 모든 기록의 원본
+├── index.html     # 추출 패키지의 미리보기, 단순 기록은 빌드 때 생성
+├── DESIGN.md      # 직접 추출했을 때의 사용 규칙
+├── tokens.json    # 직접 추출했을 때의 수치
+└── assets/        # 공개가 승인된 추출 자산
+
+.reference-previews/ # 로컬 전용 캡처/이미지, Git 무시 대상
 ```
 
 저장소를 작업 폴더로 연 뒤 다음 이름으로 호출할 수 있습니다.
@@ -65,12 +71,11 @@ Python 3.10+, uv와 Git이 필요하며, GitHub 발행에는 인증된 `gh`를 �
 ```sh
 uv --no-config run --locked --script scripts/gallery.py --help
 uv --no-config run --locked --script scripts/gallery.py doctor
-uv --no-config run --locked --script scripts/gallery.py catalog --public
-uv --no-config run --locked --script scripts/gallery.py build --output ./site-preview
-python3 -m http.server --directory ./site-preview
+uv --no-config run --locked --script scripts/gallery.py collect <id> --source <url> --title <title>
+uv --no-config run --locked --script scripts/gallery.py view
 ```
 
-명령은 저장소 루트에서 실행합니다. 빌드 출력은 새 폴더나 빈 폴더를 지정합니다. 래퍼가 이 checkout을 직접 선택하므로 개인 설정 파일 없이도 실행할 수 있습니다.
+명령은 저장소 루트에서 실행합니다. `collect`의 기본 분류는 수집함입니다. `--image <path>`로 이미지만 저장하거나 링크에 캡처를 붙일 수 있습니다. `view`가 출력하는 URL을 브라우저에서 열면 미공개 자료와 로컬 이미지까지 보입니다. 서버는 Ctrl-C로 종료하며, 새 자료를 저장한 뒤 `view`를 다시 실행하면 새 목록을 만듭니다. 래퍼는 이 checkout을 직접 선택합니다.
 
 디자인 시스템을 재사용할 때는 글꼴, 의미 색상, 간격과 컴포넌트 규칙을 대상 서비스에 맞게 적용합니다. 원본 사진과 특정 화면 배치는 재현 요청이나 대상 콘텐츠에 필요한 경우에 사용합니다.
 
@@ -78,13 +83,13 @@ python3 -m http.server --directory ./site-preview
 
 ## 수정과 발행
 
-링크/문서를 수집할 때는 [디자인 북 절차](.agents/skills/reference-ui-gallery/references/design-book.md)를 따릅니다.
+링크/이미지를 수집할 때는 [수집과 열람 절차](.agents/skills/reference-ui-gallery/references/design-book.md)를 따릅니다.
 
 ```sh
-uv --no-config run --locked --script scripts/gallery.py note <id> --title <title> --source <url> --platform web --category guideline
+uv --no-config run --locked --script scripts/gallery.py collect <id> --source <url> --category asset --tag SVG --note <memo>
 ```
 
-`note`는 미확인 초안을 만들며 토큰이나 실행 증거를 생성하지 않습니다. 사용 조건과 출처를 작성한 뒤 `validate --ready`로 검사합니다. 도구와 생성 파일을 갱신할 때는 격리된 기능 worktree에서 `bundle --project-skill --apply`를 사용합니다. 공개는 기존 `publish`/`finish` 절차를 따릅니다.
+`collect`는 저장만 하며 commit/push나 공개 발행을 하지 않습니다. 공개할 링크와 메모는 별도 검토합니다. 도구와 생성 파일을 갱신할 때는 기능 worktree에서 `bundle --project-skill --apply`를 사용합니다. 공개는 기존 `publish`/`finish` 절차를 따릅니다.
 
 레퍼런스의 값은 `tokens.json`, 사용 규칙은 `DESIGN.md`, 출처와 검증 범위는 `reference.json`에서 관리합니다. 갤러리 자체의 테마는 루트 `gallery.css`에 있습니다.
 

@@ -10,12 +10,25 @@
 .item-summary { color:var(--g-fg); margin:0 0 16px; font-size:15px; line-height:1.7; }
 .verification-label { color:var(--g-muted); margin:0 0 16px; }
 .item-content h3 a:hover { text-decoration:underline; text-underline-offset:3px; }
-.book-note .item-content { display:flex; flex-direction:column; height:100%; padding:20px; }
+.book-note { display:flex; flex-direction:column; }
+.book-note .item-content { display:flex; flex-direction:column; flex:1; padding:20px; }
 .book-note .links { margin-top:auto; display:flex; justify-content:space-between; gap:16px; }
 .book-note .links a:first-child { background:none; color:var(--g-fg); margin:0; }
 .book-note .links a { padding:8px 0; min-height:44px; text-decoration:underline; text-underline-offset:3px; }
 .grid.single .book-note { display:block; }
+.book-note .preview { aspect-ratio:16/9; flex:none; }
 .reference:not(.book-note) .preview { aspect-ratio:3/1; max-height:210px; }
+.book-note .preview img { object-fit:cover; object-position:top; }
+.preview.empty { flex-direction:column; gap:12px; padding:24px; background:var(--g-selected); text-align:center; }
+.preview.empty strong { font-size:clamp(18px,2vw,26px); font-weight:500; color:var(--g-fg); overflow-wrap:anywhere; }
+.preview-category { font-size:13px; }
+.item-summary { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; }
+.collection-help { margin-left:auto; max-width:320px; font-size:13px; }
+.collection-help summary { cursor:pointer; padding:10px 0; }
+:where(.collection-help) p { color:var(--g-muted); line-height:1.7; margin:4px 0 12px; }
+.saved-preview { width:100%; max-height:520px; object-fit:contain; object-position:top; margin:12px 0 20px; border:1px solid var(--g-line); border-radius:8px; }
+.source-button { display:inline-block; min-height:44px; padding:10px 18px; background:var(--g-primary); color:var(--g-on-primary); border-radius:8px; }
+.saved-meta { color:var(--g-muted); font-size:13px; }
 .book-toolbar { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin:-8px 0 24px; font-size:14px; }
 select { font:inherit; color:var(--g-fg); background:var(--g-surface); border:1px solid var(--g-line); padding:8px 10px; min-height:44px; border-radius:6px; }
 select:focus-visible { outline:2px solid var(--g-focus); outline-offset:3px; }
@@ -39,6 +52,7 @@ select:focus-visible { outline:2px solid var(--g-focus); outline-offset:3px; }
   .lead { font-size:14px; }
   .mobile-platform { display:block; }
   .book-toolbar { gap:8px; font-size:13px; }
+  .collection-help { flex-basis:100%; margin-left:0; }
   .book-note .item-content { padding:16px; }
   .collection-note { display:none; }
   footer { font-size:12px; flex-direction:column; gap:4px; }

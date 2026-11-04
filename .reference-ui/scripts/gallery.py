@@ -27,6 +27,7 @@ RUNTIME_FILES = (
     "assets/gallery.html", "assets/gallery.css", "assets/gallery.js", "assets/pages.yml",
     "tests/test_token_contract.py", "tests/test_design_book.py",
     "scripts/book.py", "assets/book-template.json", "assets/book-note.html",
+    "scripts/collection.py", "assets/bookmark-template.json", "assets/bookmark.html",
     "assets/book.css", "assets/book.js", "pyproject.toml", "uv.lock",
 )
 SKILL_FILES = RUNTIME_FILES + (
@@ -111,11 +112,13 @@ def public_files(root, metadata, api):
     api.require(isinstance(files, list) and files and all(api.nonempty(x) for x in files), "publication.files must explicitly list the files approved for export.")
     api.require(len(files) == len(set(files)), "publication.files contains duplicates.")
     note = metadata.get("record_type") == "note"
-    required = {"reference.json"} if note else {"DESIGN.md", "tokens.json", "reference.json", metadata["preview"]}
+    bookmark = metadata.get("record_type") == "bookmark"
+    required = {"reference.json"} if note or bookmark else {"DESIGN.md", "tokens.json", "reference.json", metadata["preview"]}
     if metadata.get("thumbnail"):
         required.add(metadata["thumbnail"])
-    if note:
-        required.update(metadata["verification"]["evidence"])
+    if note or bookmark:
+        if note:
+            required.update(metadata["verification"]["evidence"])
         api.require("index.html" not in files, "Book index.html is generated from reference.json; do not export a second source.")
     else:
         for check in metadata["verification"].values():
@@ -228,21 +231,29 @@ def build_site(workspace, output, api, drafts=False):
     api.require(output != workspace and not workspace.is_relative_to(output), "Build output cannot be the checkout or its parent.")
     api.require(not output.exists() or (output.is_dir() and not any(output.iterdir())), "Build output must be new or empty; use a fresh directory so stale files cannot be published.")
     listing = api.catalog(workspace, include_drafts=drafts, public=not drafts)
-    api.require(listing["items"], "No reviewed, ready public entries are available to build.")
+    api.require(listing["items"] or drafts, "No reviewed, ready public entries are available to build.")
     prepared = []
     for item in listing["items"]:
         root = api.entry_root(workspace, item["id"])
         metadata, _ = api.validate_entry(root, public=not drafts)
         files = public_files(root, metadata, api)
-        prepared.append((root, metadata, files))
+        prepared.append((root, metadata, files, item))
     output.mkdir(parents=True, exist_ok=True)
-    for root, metadata, files in prepared:
+    for root, metadata, files, item in prepared:
         destination = output / "references" / root.name
         destination.mkdir(parents=True)
         for relative in files:
             target = destination / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(root / relative, target)
+        if drafts:
+            import collection
+            thumbnail = collection.local_preview(workspace, root.name, output, api)
+            if thumbnail:
+                item["thumbnail"] = thumbnail
+        if metadata.get("record_type") == "bookmark":
+            import collection
+            (destination / "index.html").write_text(collection.render(metadata, api, (workspace / "gallery.css").exists(), item["thumbnail"]), encoding="utf-8")
         if metadata.get("record_type") == "note":
             import book
             (destination / "index.html").write_text(book.render(metadata, api, (workspace / "gallery.css").exists(), drafts), encoding="utf-8")
@@ -264,7 +275,7 @@ def build_site(workspace, output, api, drafts=False):
         custom = '<link rel="stylesheet" href="gallery.css">'
     document = (api.ASSETS / "gallery.html").read_text(encoding="utf-8")
     document = document.replace("<!-- GALLERY_STYLE -->", custom)
-    document = document.replace("<!-- DRAFT_NOTICE -->", '<p class="draft-notice" role="status">DRAFT / 검증 전 로컬 미리보기</p>' if drafts else "")
+    document = document.replace("<!-- DRAFT_NOTICE -->", '<p class="draft-notice" data-build="DRAFT" role="status">로컬 보관함 / 이미지 미리보기 포함</p>' if drafts else "")
     fallback = '<ul>' + ''.join('<li><a href="' + html.escape(item["preview"], quote=True) + '">' + html.escape(item["title"]) + '</a></li>' for item in listing["items"]) + '</ul>'
     document = document.replace("<!-- STATIC_LINKS -->", fallback)
     (output / "index.html").write_text(document.replace('{"items":[],"template":"CATALOG_DATA"}', data), encoding="utf-8")
@@ -476,7 +487,7 @@ def finish(repo, pr_number, workspace, remote, merge, timeout, api, expected_ent
 def publish(args, workspace, data, api):
     source = Path(args.source).expanduser().resolve()
     metadata, _ = api.validate_entry(source, public=True)
-    api.require(metadata["status"] == "ready", "Publish requires status=ready; draft references are excluded from public builds.")
+    api.require(metadata["status"] in {"ready", "saved"}, "Publish requires status=ready or status=saved; drafts are excluded from public builds.")
     files = public_files(source, metadata, api)
     style = gallery_style(Path(args.gallery_style).expanduser().absolute(), api) if args.gallery_style else None
     repo = repo_name(workspace, data["remote_name"], api)

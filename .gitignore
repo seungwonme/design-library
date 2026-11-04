@@ -2,3 +2,4 @@ site-preview/
 __pycache__/
 .DS_Store
 .taste-skill/
+/.reference-previews/

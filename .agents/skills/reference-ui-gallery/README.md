@@ -1,12 +1,12 @@
 # reference-ui-gallery
 
-UI 라이브러리, 디자인 지침, 디자인 시스템과 토큰, UI/UX 흐름을 기록하는 디자인 북 스킬이다. 링크와 공식 문서를 평가한 읽기 기록, 실제 UI에서 추출한 디자인 규칙/토큰/프로토타입을 같은 갤러리에 보관한다. 준비된 디자인을 별도 제품에 적용하기만 하는 구현은 해당 제품의 개발 워크플로가 맡는다.
+디자인 레퍼런스, UI 컴포넌트/라이브러리, 아이콘/에셋, 디자인 시스템, UX 규칙을 모아보는 개인 라이브러리 스킬이다. 링크나 이미지는 수집함 또는 다섯 분류에 저장하고, 짧은 메모와 태그로 찾는다. 기존 상세 기록과 UI 추출 패키지도 보존한다.
 
 사용자 진입점은 [SKILL.md](SKILL.md)다. 도구는 Python, uv로 고정한 jsonschema 환경, Git, GitHub CLI를 사용한다. 설정/조회/검증/빌드는 로컬에서 실행한다. 저장소 생성과 발행은 먼저 계획을 반환하고 `--apply`에서만 외부 변경을 실행한다. 사용자 설정은 설치 폴더 밖에 두고, 배포 템플릿의 사용자 값은 비워 둔다.
 
 ## REA, Taste, prototype 연결
 
-[디자인 북 절차](references/design-book.md)는 출처 확인, 추천 이유, 적용 조건, 반례와 검증 수준을 정의한다. [빈 기록 템플릿](assets/book-template.json)에서 시작하며 읽기 페이지는 자동 생성된다. 실제 수집한 링크와 평가는 갤러리 저장소에만 둔다.
+[수집과 열람 절차](references/design-book.md)는 `collect`로 링크/이미지를 저장하고 `view`로 보는 흐름을 정의한다. [저장 기록](assets/bookmark-template.json)이 기본이며 평가문은 필요하지 않다. 기존 [상세 기록](assets/book-template.json)은 호환을 유지한다. 실제 자료는 갤러리 저장소에만 둔다.
 
 | 역할 | 연결된 절차 |
 |---|---|
@@ -51,6 +51,8 @@ CI의 저장소 래퍼는 프로젝트 스킬이 있으면 그 실행 코드를 
 초기 후보의 관찰 결과와 한계는 [경량 평가 기록](tests/eval-report.md)에 있다.
 
 [디자인 북 회귀 검사](tests/test_design_book.py)는 초안 보존, 출처/실행 검증 구분, HTML escaping, 공개 파일 목록과 흐름의 복귀 경로를 검사한다. 편집 훅의 테스트 환경은 [pyproject.toml](pyproject.toml)과 [uv.lock](uv.lock)으로 고정하며 `uv sync --frozen`으로 준비한다. CLI는 기존 PEP 723 잠금 파일을 사용한다. 두 환경은 같은 jsonschema 버전을 선언한다.
+
+가벼운 저장 형식은 [collection.py](scripts/collection.py)와 [읽기 화면](assets/bookmark.html)이 처리한다. 로컬 이미지는 갤러리 `.reference-previews/`에 저장하며 Git과 공개 빌드에서 제외한다. `view`는 loopback 서버이고 영구 배포나 자동 수집 작업을 등록하지 않는다.
 
 0.6.0의 결정론적 검사 범위와 결과는 [토큰 계약 검증](tests/token-contract-report.md)에 있다. 검사에는 [고정한 스키마](assets/dtcg-format.schema.json), [값/별칭 검사 구현](scripts/token-validation.py), [Python 잠금 파일](scripts/reference-ui.py.lock)을 사용한다.
 

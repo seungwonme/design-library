@@ -107,6 +107,68 @@ class DesignBookTest(unittest.TestCase):
             result = self.call("validate", "sample", ok=False)
             self.assertIn("source", result["error"].lower())
 
+    def test_collect_saves_to_inbox_without_assessment(self):
+        result = self.call("collect", "bookmark", "--source", "https://example.org/icons")
+        self.assertTrue(result["created"])
+        data = json.loads((self.repo / "references/bookmark/reference.json").read_text())
+        self.assertEqual(data["category"], "inbox")
+        self.assertEqual(data["note"], "")
+        self.assertNotIn("assessment", data)
+        self.assertNotIn("verification", data)
+        self.assertEqual(self.call("catalog")["items"][0]["record_type"], "bookmark")
+        self.assertEqual(self.call("catalog", "--public")["items"], [])
+
+    def test_collect_reuses_source_without_overwriting_saved_notes(self):
+        self.call("collect", "bookmark", "--source", "https://example.org/icons", "--note", "Keep my note", "--category", "asset")
+        saved = self.repo / "references/bookmark/reference.json"
+        before = saved.read_bytes()
+        result = self.call("collect", "different-id", "--source", "https://example.org/icons", "--note", "Overwrite")
+        self.assertFalse(result["created"])
+        self.assertEqual(result["id"], "bookmark")
+        self.assertEqual(saved.read_bytes(), before)
+        self.assertFalse((self.repo / "references/different-id").exists())
+
+    def test_collect_rejects_credentials_before_writing(self):
+        self.call("collect", "bad-url", "--source", "https://person:synthetic@example.org/", ok=False)
+        self.assertFalse((self.repo / "references/bad-url").exists())
+
+    def test_local_preview_is_ignored_and_excluded_from_public_build(self):
+        import base64
+        image = self.repo / "fixture.png"
+        image.write_bytes(base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jXioAAAAASUVORK5CYII="))
+        self.call("collect", "bookmark", "--source", "https://example.org/icons", "--image", str(image))
+        repeated = self.call("collect", "bookmark", "--source", "https://example.org/icons", "--image", str(image))
+        self.assertFalse(repeated["created"])
+        another = self.repo / "different.jpg"
+        another.write_bytes(b"Different synthetic image")
+        self.call("collect", "bookmark", "--source", "https://example.org/icons", "--image", str(another), ok=False)
+        self.assertFalse((self.repo / ".reference-previews/bookmark.jpg").exists())
+        path = self.repo / "references/bookmark/reference.json"
+        data = json.loads(path.read_text())
+        data["publication"].update(review="approved", rights="cleared", notes="Original link and note only.")
+        path.write_text(json.dumps(data))
+        ignored = subprocess.run(["git", "check-ignore", ".reference-previews/bookmark.png"], cwd=self.repo, capture_output=True)
+        self.assertEqual(ignored.returncode, 0)
+        self.call("build", "--drafts", "--output", str(self.repo / "local"))
+        self.assertEqual((self.repo / "local/previews/bookmark.png").read_bytes(), image.read_bytes())
+        self.assertIn("previews/bookmark.png", (self.repo / "local/references/bookmark/index.html").read_text())
+        self.call("build", "--output", str(self.repo / "public"))
+        self.assertFalse((self.repo / "public/previews").exists())
+        self.assertNotIn("previews/bookmark.png", (self.repo / "public/references/bookmark/index.html").read_text())
+
+    def test_image_only_record_stays_local(self):
+        import base64
+        image = self.repo / "drawing.png"
+        image.write_bytes(base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jXioAAAAASUVORK5CYII="))
+        self.call("collect", "drawing", "--image", str(image))
+        record = self.repo / "references/drawing/reference.json"
+        self.assertEqual(json.loads(record.read_text())["url"], "")
+        self.call("build", "--drafts", "--output", str(self.repo / "image-view"))
+        page = (self.repo / "image-view/references/drawing/index.html").read_text()
+        self.assertIn("이미지 열기", page)
+        self.assertIn("../../previews/drawing.png", page)
+        self.call("validate", "drawing", "--public", ok=False)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,26 @@
+{
+  "schema_version": 3,
+  "record_type": "bookmark",
+  "id": "phosphor-icons",
+  "title": "Phosphor Icons",
+  "status": "saved",
+  "category": "asset",
+  "url": "https://phosphoricons.com/",
+  "note": "여러 굵기와 스타일로 찾아보는 아이콘 세트.",
+  "tags": [
+    "아이콘",
+    "SVG"
+  ],
+  "platforms": [
+    "web"
+  ],
+  "saved_at": "2026-11-04",
+  "publication": {
+    "review": "approved",
+    "rights": "cleared",
+    "notes": "공개 사이트 URL과 직접 작성한 짧은 메모만 공유합니다. 화면 캡처는 로컬 캐시에만 보관하며 공개 파일에 포함하지 않습니다.",
+    "files": [
+      "reference.json"
+    ]
+  }
+}

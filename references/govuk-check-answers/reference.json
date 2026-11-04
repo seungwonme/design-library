@@ -4,7 +4,7 @@
   "id": "govuk-check-answers",
   "title": "GOV.UK / 입력, 확인, 수정, 제출",
   "status": "ready",
-  "category": "flow",
+  "category": "guideline",
   "platforms": [
     "web"
   ],

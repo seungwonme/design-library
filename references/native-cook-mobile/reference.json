@@ -4,7 +4,7 @@
   "id": "native-cook-mobile",
   "title": "Native Cook / 영상에서 시작하는 모바일 UI",
   "status": "ready",
-  "category": "library",
+  "category": "reference",
   "platforms": [
     "mobile"
   ],
@@ -87,5 +87,6 @@
     "files": [
       "reference.json"
     ]
-  }
+  },
+  "url": "https://nativecook.dev/"
 }

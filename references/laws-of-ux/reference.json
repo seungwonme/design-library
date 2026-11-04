@@ -1,0 +1,27 @@
+{
+  "schema_version": 3,
+  "record_type": "bookmark",
+  "id": "laws-of-ux",
+  "title": "Laws of UX",
+  "status": "saved",
+  "category": "guideline",
+  "url": "https://lawsofux.com/",
+  "note": "인터페이스를 이해하는 데 도움이 되는 UX 개념과 원칙.",
+  "tags": [
+    "UX",
+    "인지",
+    "원칙"
+  ],
+  "platforms": [
+    "web"
+  ],
+  "saved_at": "2026-11-04",
+  "publication": {
+    "review": "approved",
+    "rights": "cleared",
+    "notes": "공개 사이트 URL과 직접 작성한 짧은 메모만 공유합니다. 화면 캡처는 로컬 캐시에만 보관하며 공개 파일에 포함하지 않습니다.",
+    "files": [
+      "reference.json"
+    ]
+  }
+}

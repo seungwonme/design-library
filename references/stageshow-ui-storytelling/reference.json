@@ -4,7 +4,7 @@
   "id": "stageshow-ui-storytelling",
   "title": "Stageshow / 제품 UI를 설명하는 장면",
   "status": "ready",
-  "category": "guideline",
+  "category": "library",
   "platforms": [
     "web"
   ],
@@ -93,5 +93,6 @@
     "files": [
       "reference.json"
     ]
-  }
+  },
+  "url": "https://github.com/benjitaylor/skills"
 }

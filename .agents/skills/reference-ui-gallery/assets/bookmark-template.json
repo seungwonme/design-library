@@ -1,0 +1,14 @@
+{
+  "schema_version": 3,
+  "record_type": "bookmark",
+  "id": "",
+  "title": "",
+  "status": "saved",
+  "category": "inbox",
+  "url": "",
+  "note": "",
+  "tags": [],
+  "platforms": ["web"],
+  "saved_at": "",
+  "publication": {"review": "pending", "rights": "unreviewed", "notes": "", "files": ["reference.json"]}
+}

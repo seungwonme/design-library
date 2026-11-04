@@ -4,10 +4,12 @@ import html
 from urllib.parse import quote, urlsplit
 
 CATEGORIES = {
-    "library": "UI 라이브러리",
-    "guideline": "디자인 지침",
-    "design-system": "디자인 시스템과 토큰",
-    "flow": "UI/UX 흐름",
+    "reference": "디자인 레퍼런스",
+    "library": "UI 컴포넌트/라이브러리",
+    "asset": "아이콘/에셋",
+    "design-system": "디자인 시스템",
+    "guideline": "UX 규칙",
+    "inbox": "수집함",
 }
 LEVELS = {"unread": "원문 미확인", "source-read": "문서 확인", "hands-on": "직접 검증"}
 
@@ -36,9 +38,11 @@ def validate(root, data, api, ready=False, public=False):
     require(type(data.get("schema_version")) is int and data["schema_version"] == 2, "Book records require schema_version 2.")
     require(data.get("id") == root.name and api.SLUG.fullmatch(root.name), "Metadata id must match the entry folder.")
     require(text(data.get("title")), "Entry title is missing.")
+    if data.get("url"):
+        web_source(data["url"], api)
     require(api.choice(data.get("status"), {"draft", "ready"}), "Entry status must be draft or ready.")
     ready = ready or public or data["status"] == "ready"
-    require(api.choice(data.get("category"), CATEGORIES), "Choose one of the four design-book categories.")
+    require(api.choice(data.get("category"), {*CATEGORIES, "flow"}), "Choose a library category.")
     for key in ("platforms", "tags"):
         require(isinstance(data.get(key), list) and all(text(x) for x in data[key]), f"{key} must be a string array.")
     require(data["platforms"] and all(x in {"web", "mobile", "desktop"} for x in data["platforms"]), "Choose valid platforms.")
@@ -108,10 +112,10 @@ def catalog_item(data, prefix):
     searchable += [value for item in data["details"] for value in (item["label"], item["value"])]
     searchable += [value for step in data["flow"] for value in step.values() if isinstance(value, str)]
     searchable += [source.get("title", "") + " " + source["location"] for source in data["sources"]]
-    return {"record_type": "note", "category": data["category"], "summary": data["summary"],
+    return {"record_type": "note", "category": "reference" if data["category"] == "flow" else data["category"], "summary": data["summary"],
             "search_text": " ".join(searchable),
             "verification": data["verification"]["level"], "checked_at": data["verification"]["checked_at"],
-            "source": data["sources"][0]["location"], "preview": prefix + "index.html",
+            "source": data.get("url") or data["sources"][0]["location"], "preview": prefix + "index.html",
             "design": "", "tokens": "", "thumbnail": "", "metadata": prefix + "reference.json"}
 
 
@@ -139,11 +143,11 @@ def render(data, api, custom_style=False, drafts=False):
     if data["verification"]["evidence"]:
         blocks += '<section><h2>검증 자료</h2><ul>' + ''.join('<li><a href="' + esc(quote(path, safe="/"), quote=True) + '">' + esc(path) + '</a></li>' for path in data["verification"]["evidence"]) + '</ul></section>'
     template = (api.ASSETS / "book-note.html").read_text(encoding="utf-8")
-    values = {"TITLE": esc(data["title"]), "CATEGORY": esc(CATEGORIES[data["category"]]),
+    values = {"TITLE": esc(data["title"]), "CATEGORY": esc(CATEGORIES.get(data["category"], "디자인 레퍼런스")),
               "SUMMARY": esc(data["summary"]), "LEVEL": esc(LEVELS[data["verification"]["level"]]),
               "CHECKED": esc(data["verification"]["checked_at"] or "확인 전"), "SCOPE": esc(data["verification"]["scope"]),
               "CONTENT": blocks, "CUSTOM_STYLE": '<link rel="stylesheet" href="../../gallery.css">' if custom_style else '',
-              "DRAFT": '<p class="draft-notice">DRAFT / 검증 전 로컬 미리보기</p>' if drafts else ''}
+              "DRAFT": '<p class="draft-notice" data-build="DRAFT">로컬 보관 자료</p>' if drafts else ''}
     # Substitute only template markers; source strings never become template instructions.
     import re
     return re.sub(r"\{\{([A-Z_]+)\}\}", lambda match: values[match[1]], template)

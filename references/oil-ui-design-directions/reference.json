@@ -4,7 +4,7 @@
   "id": "oil-ui-design-directions",
   "title": "Oil UI / 비교할 수 있는 디자인 방향",
   "status": "ready",
-  "category": "guideline",
+  "category": "library",
   "platforms": [
     "web"
   ],
@@ -93,5 +93,6 @@
     "files": [
       "reference.json"
     ]
-  }
+  },
+  "url": "https://github.com/oil-oil/oil-ui"
 }
