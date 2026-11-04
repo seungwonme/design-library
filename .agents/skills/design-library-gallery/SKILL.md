@@ -1,9 +1,9 @@
 ---
 name: design-library-gallery
-description: "이 갤러리 저장소에서 Use for: Collect and browse design references, UI libraries, icons/assets, design systems and UX rules in a personal design library; extract UI packages when requested. Not for implementation-only reuse in another product or routine UI fixes."
+description: "이 갤러리 저장소에서 Use for: Extract reusable DESIGN.md and design tokens from a website URL supplied as a design reference, then verify a new screen and browse the result. Also collect design resources, icons, UI libraries and UX rules. Not for unrelated URLs, implementation-only reuse in another product or routine UI fixes."
 compatibility: "Python 3.10+, uv and Git; GitHub CLI for repository setup and publication. Extraction and visual verification require a suitable browser, app inspector, or user-provided captures."
 metadata:
-  version: "0.7.0"
+  version: "0.8.0"
   requires:
     - tool: uv
       check: uv --version
@@ -12,7 +12,9 @@ metadata:
 
 # Design Library
 
-디자인 레퍼런스, UI 컴포넌트/라이브러리, 아이콘/에셋, 디자인 시스템, UX 규칙을 개인 라이브러리에 모으고 찾아본다. 링크, 이미지, 직접 적은 짧은 규칙을 저장하며 미분류 자료는 수집함에 둔다. 실제 UI 추출을 요청했을 때는 기존 토큰/프로토타입 패키지를 사용한다.
+디자인 레퍼런스로 받은 웹사이트 URL은 [추출](references/extraction.md)에 따라 직접 관찰하고 `DESIGN.md`, 토큰, 새 화면 검증과 열람 가능한 결과까지 만든다. 이 맥락에서 URL만 받아도 시작하며 별도 호출 문구나 사용자 캡처를 요구하지 않는다.
+
+“저장만” 요청, 아이콘/라이브러리/자료 모음, UX 규칙과 소셜 게시물은 [수집](references/design-book.md)으로 처리한다. 그 자료의 웹 UI 자체를 추출하라는 요청은 추출 경로를 따른다. 소셜 링크의 추출 요청은 게시물이 명확히 가리킨 제품 사이트를 확인해 대상으로 삼는다. 무관한 URL에는 이 기본값을 적용하지 않는다.
 
 대상은 결과물이 들어갈 저장소와 요청한 산출물로 구분한다. 준비된 디자인을 별도 제품 코드에 적용하기만 하는 작업은 구현 워크플로가 맡으며, 이 스킬의 설정/보관/발행 절차를 시작하지 않는다. 갤러리 저장소 자체를 바꾸는 작업은 이 본문의 전체 절차를 따른다.
 
@@ -26,7 +28,7 @@ REA는 원본 분석, taste-skill은 용도에 맞는 시각 방향과 개선, M
 |---|---|
 | 최초 사용, 저장 경로/원격 변경, 설정 오류 | [설정](references/SETUP.md) |
 | 링크/이미지/메모 저장, 분류, 라이브러리 검색과 열람 | [디자인 라이브러리](references/design-book.md) |
-| 웹/앱/스크린샷에서 UI 추출 | [추출](references/extraction.md) |
+| 디자인 레퍼런스 URL, 웹/앱/스크린샷 추출, 추출 품질과 중단 판정 | [추출과 품질 기준](references/extraction.md) |
 | REA로 앱/번들/웹 분석, 분석 결과를 디자인 근거로 연결 | [REA 추출](references/rea-extraction.md) |
 | 시각 방향 탐색, Taste 적용, 대표 화면과 구조 변형 비교 | [Taste와 prototype](references/taste-and-prototype.md) |
 | 항목 생성/수정/검증, DESIGN.md/토큰 작성 | [산출물 계약](references/package-contract.md) |
@@ -34,13 +36,13 @@ REA는 원본 분석, taste-skill은 용도에 맞는 시각 방향과 개선, M
 
 ## 작업 순서
 
-1. 링크/이미지/메모 저장과 검색은 [디자인 라이브러리](references/design-book.md)의 `collect`/`view` 흐름을 따른다. 저장에 긴 분석을 요구하지 않는다. UI 추출과 갤러리 구현은 다음 단계를 따른다.
+1. 위 입력 구분에 따라 추출 또는 수집을 선택한다. 추출은 [추출 절차](references/extraction.md)의 관찰, 작성, 재사용 검증, 열람까지 이어간다. 수집은 `collect`/`view`로 마친다.
 2. [설정](references/SETUP.md)에 따라 현재 갤러리의 실행 진입점을 고르고 `--help`, `doctor`로 대상 저장소를 확인한다. 연결된 갤러리가 없으면 설정 참조에 따라 연결한다.
-3. 추출은 [REA 분석 경로](references/rea-extraction.md)에서 도구를 고르고 원본 근거를 수집한다. 패키지 재사용 검증은 기존 `DESIGN.md`, `tokens.json`, 미리보기를 읽고 사실과 추론/새 제안을 구분한다.
+3. 추출은 사용 가능한 브라우저로 시작한다. 앱/번들 분석이 필요하면 [REA 분석 경로](references/rea-extraction.md)를 선택한다. 패키지 재사용 검증은 기존 `DESIGN.md`, `tokens.json`, 미리보기를 읽고 사실과 추론/새 제안을 구분한다.
 4. 추출/재사용 패키지는 산출물 계약에 맞춰 규칙/토큰과 프로토타입을 기록한다. 갤러리 화면/테마 수정은 [갤러리 관리](references/gallery-and-reuse.md#갤러리-관리)의 저장소 소유 파일과 생성물 경계를 따른다.
 5. 시각 방향이나 비교 질문이 있으면 [Taste와 prototype](references/taste-and-prototype.md)에서 목적에 맞는 절차를 고른다. 기존 스택을 존중하며 신규 스택은 요구와 검증 목적을 근거로 선택한다.
 6. 추출/재사용 패키지는 원본에 없던 새 화면과 관련 상태/크기를 확인한다. 갤러리 수정은 변경한 화면의 검색/필터/문서 링크와 관련 테마/화면 크기를 확인한다. 실제 렌더링으로 확인하지 못한 항목은 미검증으로 기록한다.
-7. 추출/재사용 패키지 변경은 `validate`로 검사하고 준비 완료 표시에는 `validate --ready`를 추가한다. 검사기나 패키지 묶음을 바꾸면 `check`로 회귀 검사와 임시 빌드를 실행한다. 갤러리 빌드와 발행은 `build`, `publish`, `finish`를 사용한다. 승인 범위에 따라 PR, Actions, 실제 Pages URL 확인까지 이어간다.
+7. 추출은 [품질 완료 기준](references/extraction.md#완료-기준)을 먼저 대조하고 `validate --ready`로 구조를 검사한다. 부분 결과는 draft로 유지한다. 검사기나 패키지 묶음을 바꾸면 `check`로 회귀 검사와 임시 빌드를 실행한다. 갤러리 빌드와 발행은 `build`, `publish`, `finish`를 사용한다. 승인 범위에 따라 PR, Actions, 실제 Pages URL 확인까지 이어간다.
 
 ## 작업 기준
 
@@ -54,6 +56,6 @@ REA는 원본 분석, taste-skill은 용도에 맞는 시각 방향과 개선, M
 
 ## 완료 보고
 
-저장 위치, 분류와 사용자가 열어볼 URL을 보고한다. 추출 요청에는 원본 대비 차이와 새 화면 검증 결과를 포함한다. 로컬 보관/보기, Git 반영, 공개 Pages 배포를 구분한다.
+저장 위치, 분류와 사용자가 열어볼 URL을 보고한다. 추출은 완료/부분 결과를 구분하고 관찰 범위, 원본 대비 차이와 새 화면 검증 결과를 포함한다. 로컬 보관/보기, Git 반영, 공개 Pages 배포를 구분한다.
 
 검사 도구의 통과는 파일/참조/기록 검사다. 시각적 동일성, 네이티브 동작, 재배포 권리의 확인을 대신하지 않는다.

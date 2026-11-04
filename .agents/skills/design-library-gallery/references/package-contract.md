@@ -15,7 +15,7 @@
 
 ## 작성
 
-1. `new <slug> --title <title> --source <source> --platform <platform>`을 실행한다. [디자인 문서 템플릿](../assets/design-template.md), [메타데이터 템플릿](../assets/reference-template.json), [토큰 템플릿](../assets/tokens-template.json)으로 초안을 만든다. 미리보기와 검증 완료 기록은 자동 생성하지 않는다.
+1. 원본 관찰과 [추출 품질 기준](extraction.md)을 따르며 `new <slug> --title <title> --source <source> --platform <platform>`을 실행한다. [디자인 문서 템플릿](../assets/design-template.md), [메타데이터 템플릿](../assets/reference-template.json), [토큰 템플릿](../assets/tokens-template.json)으로 초안을 만든다. 미리보기와 검증 완료 기록은 자동 생성하지 않는다.
 2. `DESIGN.md`의 작성 표시를 실제 규칙으로 채운다. 값은 토큰 이름으로 참조하고 HTML과 문서에 독립된 수치 사본을 유지하지 않는다.
 3. `tokens.json`에 색상/간격/글꼴/표면/모션 값을 기록한다. 교환 규격이 직접 표현하지 않는 효과는 문서와 이름을 붙인 확장 데이터로 설명한다.
 4. `reference.json`의 `sources`와 `evidence`를 채운다. 코드 선언, 화면 측정, 추론, 제안을 같은 확실성으로 쓰지 않는다.
@@ -41,7 +41,7 @@
 
 `verification`의 각 항목은 `pass`, `fail`, `not-run`, `not-applicable` 중 하나로 기록한다. `pass`에는 실제 확인 기록 파일을 연결하고, `not-applicable`에는 이유를 적는다. `new_screen`과 `visual`은 준비 완료에 필수다.
 
-`validate --ready`가 통과한 뒤 `status`를 `ready`로 바꾼다. 검사 결과의 `token_contract`에는 규격, 프로파일, 공식 스키마 해시와 지원 경계를 남긴다. 필수 파일과 검증 기록의 완결성은 실제 시각 품질과 별개다.
+[추출 완료 기준](extraction.md#완료-기준)을 충족하고 `validate --ready`가 통과한 뒤 `status`를 `ready`로 바꾼다. 검사 결과의 `token_contract`에는 규격, 프로파일, 공식 스키마 해시와 지원 경계를 남긴다. 필수 파일과 검증 기록의 완결성은 실제 시각 품질과 별개다.
 
 ## 교환 형식과 검사 범위
 
