@@ -1,4 +1,4 @@
-name: UI reference pages
+name: Design Library pages
 on:
   pull_request:
   push:
@@ -19,12 +19,12 @@ jobs:
       - name: Validate and build reviewed references
         run: |
           uv --no-config run --locked --script scripts/gallery.py check
-          uv --no-config run --locked --script scripts/gallery.py build --output "$RUNNER_TEMP/reference-ui-site"
+          uv --no-config run --locked --script scripts/gallery.py build --output "$RUNNER_TEMP/design-library-site"
       - name: Upload Pages artifact
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
-          path: ${{ runner.temp }}/reference-ui-site
+          path: ${{ runner.temp }}/design-library-site
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
