@@ -16,7 +16,7 @@ import time
 from urllib.parse import unquote, urljoin, urlsplit
 from urllib.request import Request, urlopen
 
-VERSION = "0.7.0"
+VERSION = "0.8.0"
 WORKFLOW = "Design Library pages"
 PROJECT_SKILL_NAME = "design-library-gallery"
 PROJECT_SKILL_ROOT = ".agents/skills/" + PROJECT_SKILL_NAME
